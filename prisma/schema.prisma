@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+  STUDENT
+}
+
+enum CopyStatus {
+  AVAILABLE
+  RENTED
+  LOST
+  DAMAGED
+}
+
+enum RentalStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+  LOST
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  role          Role      @default(STUDENT)
+  department    String?
+  studentId     String?   @unique
+  phone         String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  rentals       Rental[]
+}
+
+model Author {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  biography   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  books       Book[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  books       Book[]
+}
+
+model Book {
+  id              String   @id @default(cuid())
+  title           String
+  isbn            String   @unique
+  description     String?
+  publisher       String?
+  publishedYear   Int?
+  coverImage      String?
+  totalCopies     Int      @default(0)
+  availableCopies Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  authors         Author[]
+  categories      Category[]
+  copies          BookCopy[]
+}
+
+model BookCopy {
+  id          String     @id @default(cuid())
+  bookId      String
+  copyNumber  Int
+  status      CopyStatus @default(AVAILABLE)
+  location    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  book        Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  rentals     Rental[]
+
+  @@unique([bookId, copyNumber])
+}
+
+model Rental {
+  id          String       @id @default(cuid())
+  bookCopyId  String
+  studentId   String
+  rentedAt    DateTime     @default(now())
+  dueDate     DateTime
+  returnedAt  DateTime?
+  status      RentalStatus @default(ACTIVE)
+  notes       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  bookCopy    BookCopy     @relation(fields: [bookCopyId], references: [id])
+  student     User         @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@index([bookCopyId])
+  @@index([status])
+}
