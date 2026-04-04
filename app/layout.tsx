@@ -1,7 +1,8 @@
-import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google"
+import { Noto_Sans_Arabic } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import AuthProvider from "@/components/auth-provider"
 import { cn } from "@/lib/utils"
 import { DirectionProvider } from "@base-ui/react"
 
@@ -25,7 +26,9 @@ export default function RootLayout({
       <body>
         <DirectionProvider direction="rtl">
           <ThemeProvider>
-            <div className="mx-16 my-8">{children}</div>
+            <AuthProvider>
+              <div className="mx-16 my-8">{children}</div>
+            </AuthProvider>
           </ThemeProvider>
         </DirectionProvider>
       </body>
