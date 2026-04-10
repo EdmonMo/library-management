@@ -3,6 +3,7 @@ import { Noto_Sans_Arabic } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import AuthProvider from "@/components/auth-provider"
+import QueryProvider from "@/components/query-provider"
 import { cn } from "@/lib/utils"
 import { DirectionProvider } from "@base-ui/react"
 
@@ -26,9 +27,11 @@ export default function RootLayout({
       <body>
         <DirectionProvider direction="rtl">
           <ThemeProvider>
-            <AuthProvider>
-              <div className="mx-16 my-8">{children}</div>
-            </AuthProvider>
+            <QueryProvider>
+              <AuthProvider>
+                <div className="mx-16 my-8">{children}</div>
+              </AuthProvider>
+            </QueryProvider>
           </ThemeProvider>
         </DirectionProvider>
       </body>
