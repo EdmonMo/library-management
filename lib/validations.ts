@@ -1,9 +1,9 @@
 import * as z from "zod"
 
 export const createUserSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(1, "اسم المستخدم مطلوب"),
+  email: z.email("البريد الالكتروني المدخل غير صحيح"),
+  password: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
   role: z.enum(["ADMIN", "EMPLOYEE"]),
   department: z.string().optional(),
   phone: z.string().optional(),
@@ -22,27 +22,27 @@ export const userListQuerySchema = z.object({
 })
 
 export const loginSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.email("البريد الالكتروني المدخل غير صحيح"),
+  password: z.string().min(1, "كلمة السر مطلوبة"),
 })
 
 export const registerSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(1, "الاسم مطلوب"),
+  email: z.email("البريد الالكتروني المدخل غير صحيح"),
+  password: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
   department: z.string().optional(),
   phone: z.string().optional(),
 })
 
 export const updateProfileSchema = z.object({
-  name: z.string().min(1, "Name is required").optional(),
+  name: z.string().min(1, "الاسم مطلوب").optional(),
   department: z.string().optional(),
   phone: z.string().optional(),
 })
 
 export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "New password must be at least 8 characters"),
+  currentPassword: z.string().min(1, "كلمة السر الحالية مطلوبة"),
+  newPassword: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
 })
 
 export type CreateUserInput = z.infer<typeof createUserSchema>
