@@ -12,6 +12,11 @@ const fontSans = Noto_Sans_Arabic({
   variable: "--font-sans",
 })
 
+export const metadata = {
+  title: "نظام إدارة المكتبة",
+  description: "نظام متكامل لإدارة المكتبات",
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +34,7 @@ export default function RootLayout({
           <ThemeProvider>
             <QueryProvider>
               <AuthProvider>
-                <div className="mx-16 my-8">{children}</div>
+                <div>{children}</div>
               </AuthProvider>
             </QueryProvider>
           </ThemeProvider>

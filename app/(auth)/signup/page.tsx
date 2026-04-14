@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -38,8 +38,6 @@ export default function SignupPage() {
   } = useRegister()
 
   async function onSubmit(data: RegisterInput) {
-    console.log(data)
-
     await registerHandler(data, {
       onSuccess: () => {
         router.push("/login")

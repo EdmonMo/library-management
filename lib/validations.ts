@@ -1,8 +1,8 @@
-import * as z from "zod"
+import z from "zod"
 
 export const createUserSchema = z.object({
   name: z.string().min(1, "اسم المستخدم مطلوب"),
-  email: z.email("البريد الالكتروني المدخل غير صحيح"),
+  email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
   password: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
   role: z.enum(["ADMIN", "EMPLOYEE"]),
   department: z.string().optional(),
@@ -22,13 +22,13 @@ export const userListQuerySchema = z.object({
 })
 
 export const loginSchema = z.object({
-  email: z.email("البريد الالكتروني المدخل غير صحيح"),
+  email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
   password: z.string().min(1, "كلمة السر مطلوبة"),
 })
 
 export const registerSchema = z.object({
   name: z.string().min(1, "الاسم مطلوب"),
-  email: z.email("البريد الالكتروني المدخل غير صحيح"),
+  email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
   password: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
   department: z.string().optional(),
   phone: z.string().optional(),
