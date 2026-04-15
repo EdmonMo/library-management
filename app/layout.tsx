@@ -17,11 +17,7 @@ export const metadata = {
   description: "نظام متكامل لإدارة المكتبات",
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }) {
   return (
     <html
       lang="ar"

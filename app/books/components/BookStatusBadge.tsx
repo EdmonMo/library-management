@@ -8,7 +8,7 @@ import { AlertCircle, CheckCircle2, Clock } from "lucide-react"
  * @param {string} props.status - حالة الكتاب ('متاح', 'معار', 'صيانة')
  * @returns {JSX.Element} - عنصر الشارة التفاعلي
  */
-export default function BookStatusBadge({ status }: { status: string }) {
+export default function BookStatusBadge({ status }) {
   // تعريف متغيرات الحالات المختلفة مع ألوانها وأيقوناتها
   const variants = {
     متاح: {

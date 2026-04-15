@@ -497,7 +497,7 @@ export default function AddBookPage() {
                     value={formData.description}
                     onChange={handleInputChange}
                     placeholder="اكتب نبذة مختصرة عن محتوى الكتاب وأهميته..."
-                    rows="4"
+                    rows={4}
                   />
                 </div>
               </CardContent>

@@ -22,14 +22,7 @@ export default function StatCard({
   trendValue,
   icon: Icon,
   color,
-}: {
-  title: string
-  value: string | number
-  trend: string
-  trendValue: string
-  icon: any
-  color: string
-}): JSX.Element {
+}) {
   // إنشاء كلاسات CSS ديناميكية بناءً على اللون المحدد
   const bgColorClass = `bg-${color}-50`
   const textColorClass = `text-${color}-500`

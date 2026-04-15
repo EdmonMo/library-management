@@ -147,7 +147,7 @@ const recentOrders = [
  * @param {Object} props - خصائص SVG
  * @returns {JSX.Element} - أيقونة لوحة التحكم
  */
-function LayoutDashboard(props: object) {
+function LayoutDashboard(props) {
   return (
     <svg
       {...props}
