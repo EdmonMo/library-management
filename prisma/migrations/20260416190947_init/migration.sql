@@ -55,8 +55,6 @@ CREATE TABLE "Book" (
     "publisher" TEXT,
     "publishedYear" INTEGER,
     "coverImage" TEXT,
-    "totalCopies" INTEGER NOT NULL DEFAULT 0,
-    "availableCopies" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
