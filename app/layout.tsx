@@ -1,11 +1,10 @@
 import { Noto_Sans_Arabic } from "next/font/google"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import AuthProvider from "@/components/auth-provider"
-import QueryProvider from "@/components/query-provider"
 import { cn } from "@/lib/utils"
 import { DirectionProvider } from "@base-ui/react"
+import { Toaster } from "sonner"
+import AuthProvider from "@/components/auth-provider"
 
 const fontSans = Noto_Sans_Arabic({
   subsets: ["arabic"],
@@ -27,13 +26,12 @@ export default function RootLayout({ children }) {
     >
       <body>
         <DirectionProvider direction="rtl">
-          <ThemeProvider>
-            <QueryProvider>
-              <AuthProvider>
-                <div>{children}</div>
-              </AuthProvider>
-            </QueryProvider>
-          </ThemeProvider>
+          <AuthProvider>
+            <div>{children}</div>
+
+            {/* مكون عرض الإشعارات (Sonner Toaster) */}
+            <Toaster position="top-center" richColors />
+          </AuthProvider>
         </DirectionProvider>
       </body>
     </html>
