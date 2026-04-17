@@ -21,17 +21,18 @@ export const userListQuerySchema = z.object({
   search: z.string().optional(),
 })
 
-export const loginSchema = z.object({
-  email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
-  password: z.string().min(1, "كلمة السر مطلوبة"),
-})
-
-export const registerSchema = z.object({
+export const signupSchema = z.object({
   name: z.string().min(1, "الاسم مطلوب"),
   email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
   password: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
   department: z.string().optional(),
   phone: z.string().optional(),
+})
+
+export const loginSchema = z.object({
+  email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
+  password: z.string().min(8, "كلمة السر مطلوبة"),
+  rememberMe: z.boolean().default(false),
 })
 
 export const updateProfileSchema = z.object({
@@ -48,7 +49,7 @@ export const changePasswordSchema = z.object({
 export type CreateUserInput = z.infer<typeof createUserSchema>
 export type UpdateUserInput = z.infer<typeof updateUserSchema>
 export type UserListQuery = z.infer<typeof userListQuerySchema>
-export type LoginInput = z.infer<typeof loginSchema>
-export type RegisterInput = z.infer<typeof registerSchema>
+export type SignupFormData = z.infer<typeof signupSchema>
+export type LoginFormData = z.infer<typeof loginSchema>
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
