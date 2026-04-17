@@ -54,6 +54,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster, toast } from "sonner"
 import StatCard from "./components/StatCard"
+import { logoutAction } from "@/actions/auth"
+import { useRouter } from "next/navigation"
 
 /**
  * activityData - بيانات نشاط المكتبة خلال الشهر
@@ -176,6 +178,7 @@ function LayoutDashboard(props) {
  * @returns {JSX.Element} - لوحة التحكم الكاملة
  */
 export default function Dashboard() {
+  const router = useRouter()
   // تهيئة متغيرات الحالة (State Hooks)
   const [sidebarOpen, setSidebarOpen] = useState(false) // التحكم في ظهور القائمة الجانبية في الشاشات الصغيرة
 
@@ -183,11 +186,13 @@ export default function Dashboard() {
    * handleLogout - معالج تسجيل الخروج
    * يعرض رسالة نجاح ويعيد التوجيه إلى صفحة تسجيل الدخول بعد ثانية واحدة
    */
-  const handleLogout = () => {
-    toast.success("تم تسجيل الخروج بنجاح")
-    setTimeout(() => {
-      window.location.href = "/login"
-    }, 1000)
+  const handleLogout = async () => {
+    let res = await logoutAction()
+
+    if (res.success) {
+      toast.success("تم تسجيل الخروج بنجاح")
+      router.push("/login")
+    } else toast.error("حدث خطأ ما")
   }
 
   /**

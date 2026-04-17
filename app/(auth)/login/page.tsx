@@ -3,8 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Toaster, toast } from "sonner"
+import { toast } from "sonner"
 import {
   Eye,
   EyeOff,
@@ -19,21 +18,8 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-
-/**
- * loginSchema - مخطط التحقق من صحة بيانات الدخول باستخدام Zod
- * يحدد قواعد التحقق لكل حقل في نموذج تسجيل الدخول
- * - identifier: اسم المستخدم أو البريد الإلكتروني (الحد الأدنى 3 أحرف)
- * - password: كلمة المرور (الحد الأدنى 4 أحرف)
- * - rememberMe: خيار تذكرني (اختياري)
- */
-const loginSchema = z.object({
-  identifier: z.string().min(3, "يرجى إدخال اسم مستخدم أو بريد إلكتروني صحيح"),
-  password: z.string().min(4, "كلمة المرور غير صحيحة"),
-  rememberMe: z.boolean().optional(),
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
+import { LoginFormData, loginSchema } from "@/lib/validations"
+import { loginAction } from "@/actions/auth"
 
 /**
  * LoginPage Component - صفحة تسجيل الدخول إلى نظام إدارة المكتبة
@@ -58,33 +44,11 @@ export default function Login() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema), // ربط Zod مع React Hook Form
     defaultValues: {
-      identifier: "",
+      email: "",
       password: "",
       rememberMe: false,
     },
   })
-
-  /**
-   * demoUsers - بيانات المستخدمين التجريبية
-   * تستخدم للمحاكاة دون الحاجة إلى خادم خلفي
-   * كل مستخدم يحتوي على: اسم المستخدم، البريد الإلكتروني، كلمة المرور، الاسم الكامل، الدور الوظيفي
-   */
-  const demoUsers = [
-    {
-      username: "ahmed_mohamed",
-      email: "ahmed@library.com",
-      password: "123456",
-      name: "أحمد محمد",
-      role: "مدير النظام",
-    },
-    {
-      username: "sara_ahmed",
-      email: "sara@library.com",
-      password: "123456",
-      name: "سارة أحمد",
-      role: "أمين مكتبة",
-    },
-  ]
 
   /**
    * onSubmit - معالج إرسال نموذج تسجيل الدخول
@@ -104,35 +68,32 @@ export default function Login() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true) // بدء التحميل
 
-    // محاكاة طلب الشبكة (API call simulation)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    const res = await loginAction(data)
 
     // البحث عن مستخدم مطابق لاسم المستخدم/البريد الإلكتروني وكلمة المرور
-    const user = demoUsers.find(
-      (user) =>
-        (user.username === data.identifier || user.email === data.identifier) &&
-        user.password === data.password
-    )
+    // const user = demoUsers.find(
+    //   (user) =>
+    //     (user.username === data.email || user.email === data.email) &&
+    //     user.password === data.password
+    // )
 
-    if (user) {
-      // تخزين بيانات المستخدم في localStorage للاستمرار في الجلسة
-      localStorage.setItem("user", JSON.stringify(user))
-
-      // تخزين خيار "تذكرني" إذا تم تحديده
-      if (data.rememberMe) {
-        localStorage.setItem("rememberMe", "true")
-      }
-
-      // عرض رسالة نجاح مع اسم المستخدم
-      toast.success(`مرحباً ${user.name}`)
-
-      // التوجيه إلى لوحة التحكم (Dashboard)
+    if (res.success) {
       router.push("/dashboard")
+      // تخزين بيانات المستخدم في localStorage للاستمرار في الجلسة
+      // localStorage.setItem("user", JSON.stringify(user))
+      // تخزين خيار "تذكرني" إذا تم تحديده
+      // if (data.rememberMe) {
+      //   localStorage.setItem("rememberMe", "true")
+      // }
+      // عرض رسالة نجاح مع اسم المستخدم
+      // toast.success(`مرحباً ${user.name}`)
+      // التوجيه إلى لوحة التحكم (Dashboard)
+      // router.push("/dashboard")
     } else {
       // عرض رسالة خطأ للمستخدم
       toast.error("بيانات الدخول غير صحيحة")
-      setIsLoading(false) // إلغاء حالة التحميل
     }
+    setIsLoading(false) // إلغاء حالة التحميل
   }
 
   return (
@@ -252,13 +213,13 @@ export default function Login() {
                     type="text"
                     placeholder="ahmed_mohamed أو ahmed@library.com"
                     className="h-10 pr-9 text-sm"
-                    {...register("identifier")} // ربط الحقل مع React Hook Form
+                    {...register("email")} // ربط الحقل مع React Hook Form
                   />
                 </div>
                 {/* عرض رسالة الخطأ إذا وجدت */}
-                {errors.identifier && (
+                {errors.email && (
                   <p className="mt-1 text-xs text-destructive">
-                    {errors.identifier.message}
+                    {errors.email.message}
                   </p>
                 )}
               </div>
@@ -352,7 +313,7 @@ export default function Login() {
                 <button
                   onClick={() => {
                     // تعيين بيانات مدير النظام (اسم المستخدم)
-                    setValue("identifier", "ahmed_mohamed")
+                    setValue("email", "ahmed_mohamed")
                     setValue("password", "123456")
                   }}
                   className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
@@ -363,7 +324,7 @@ export default function Login() {
                 <button
                   onClick={() => {
                     // تعيين بيانات أمين المكتبة (اسم المستخدم)
-                    setValue("identifier", "sara_ahmed")
+                    setValue("email", "sara_ahmed")
                     setValue("password", "123456")
                   }}
                   className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
@@ -378,7 +339,7 @@ export default function Login() {
                 <button
                   onClick={() => {
                     // تعيين بيانات مدير النظام (البريد الإلكتروني)
-                    setValue("identifier", "ahmed@library.com")
+                    setValue("email", "ahmed@library.com")
                     setValue("password", "123456")
                   }}
                   className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
@@ -389,7 +350,7 @@ export default function Login() {
                 <button
                   onClick={() => {
                     // تعيين بيانات أمين المكتبة (البريد الإلكتروني)
-                    setValue("identifier", "sara@library.com")
+                    setValue("email", "sara@library.com")
                     setValue("password", "123456")
                   }}
                   className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
@@ -409,9 +370,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-
-      {/* مكون عرض الإشعارات (Sonner Toaster) */}
-      <Toaster position="top-center" richColors />
     </div>
   )
 }
