@@ -1,8 +1,7 @@
-import { NextAuthOptions, User } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
+import NextAuth, { User } from "next-auth"
 import { compare } from "bcryptjs"
 import { prisma } from "./prisma"
-import { loginSchema } from "./validations"
+import Credentials from "next-auth/providers/credentials"
 
 interface CustomUser extends User {
   id: string
@@ -10,29 +9,24 @@ interface CustomUser extends User {
   isActive: boolean
 }
 
-export const authOptions: NextAuthOptions = {
+export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
-    CredentialsProvider({
-      name: "credentials",
+    Credentials({
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: {},
+        password: {},
       },
       async authorize(credentials): Promise<CustomUser | null> {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
-
-        const parsed = loginSchema.safeParse(credentials)
-        if (!parsed.success) return null
-
         const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email },
+          where: { email: credentials.email as string },
         })
 
         if (!user || !user.isActive) return null
 
-        const isValid = await compare(parsed.data.password, user.password)
+        const isValid = await compare(
+          credentials.password as string,
+          user.password
+        )
         if (!isValid) return null
 
         return {
@@ -69,4 +63,4 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
-}
+})
