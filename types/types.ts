@@ -94,6 +94,7 @@ export type UserResponse = {
   role: "ADMIN" | "EMPLOYEE" | "STUDENT"
   department: string | null
   phone: string | null
+  studentId: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
