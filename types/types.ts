@@ -281,3 +281,10 @@ export type CategoryResponse = {
   createdAt: Date
   updatedAt: Date
 }
+
+export type CategoryListResponse = {
+  categories: CategoryResponse[]
+  total: number
+  page: number
+  totalPages: number
+}
