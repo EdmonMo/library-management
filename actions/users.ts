@@ -2,38 +2,24 @@
 
 import { hash } from "bcryptjs"
 import { prisma } from "@/lib/prisma"
-import { CreateUserInput, UpdateUserInput } from "@/lib/validations"
 import { ActionResponse, UserListResponse, UserResponse } from "@/types/types"
-import { auth } from "@/lib/auth"
+import { CreateUserFormData, UpdateUserFormData } from "@/lib/validations"
+import { checkAdmin } from "@/lib/helper"
 
 /**
  * متغيرات البحث عن المستخدمين
+ * @param {number} page - رقم الصفحة الحالية
+ * @param {number} limit - عدد النتائج في كل صفحة
+ * @param {string} search - كلمة البحث (الاسم، البريد الالكتروني)
+ * @param {string} role - تصفية حسب الدور (ADMIN، STUDENT، EMPLOYEE)
+ * @param {boolean} isActive - تصفية حسب الحالة (نشط/غير نشط)
  */
 type SearchUsersParams = {
-  page: number // رقم الصفحة الحالية
-  limit: number // عدد النتائج في كل صفحة
-  search?: string | undefined // كلمة البحث (الاسم، البريد الالكتروني)
-  role?: string | undefined // تصفية حسب الدور (ADMIN، STUDENT، EMPLOYEE)
-  isActive?: boolean | undefined // تصفية حسب الحالة (نشط/غير نشط)
-}
-
-/**
- * التحقق من صلاحيات المدير
- *
- * @description
- * دالة مساعدة للتحقق من أن المستخدم الحالي هو مدير ولديه صلاحية الوصول
- *
- * @returns {Promise<boolean>}
- *  - true إذا كان المستخدم مديراً
- *  - false ان لم يكن مديراً
- */
-
-async function checkAdmin(): Promise<boolean> {
-  const session = await auth()
-  if (!session || session.user.role !== "ADMIN") {
-    return false
-  }
-  return true
+  page: number
+  limit: number
+  search?: string | undefined
+  role?: string | undefined
+  isActive?: boolean | undefined
 }
 
 /**
@@ -263,7 +249,7 @@ export async function getUserByIdAction(
  *
  */
 export async function createUserAction(
-  createUserForm: CreateUserInput
+  createUserForm: CreateUserFormData
 ): Promise<ActionResponse<UserResponse>> {
   try {
     // التحقق من صلاحيات المدير
@@ -371,7 +357,7 @@ export async function createUserAction(
  */
 export async function updateUserAction(
   id: string,
-  updateUserForm: UpdateUserInput
+  updateUserForm: UpdateUserFormData
 ): Promise<ActionResponse<UserResponse>> {
   try {
     // التحقق من صلاحيات المدير
