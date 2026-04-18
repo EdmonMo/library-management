@@ -14,14 +14,6 @@ export const updateUserSchema = createUserSchema.partial().extend({
   isActive: z.boolean().optional(),
 })
 
-export const userListQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-  role: z.enum(["ADMIN", "EMPLOYEE", "STUDENT"]).optional(),
-  isActive: z.coerce.boolean().optional(),
-  search: z.string().optional(),
-})
-
 export const signupSchema = z.object({
   name: z.string().min(1, "الاسم مطلوب"),
   email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
@@ -47,10 +39,15 @@ export const changePasswordSchema = z.object({
   newPassword: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
 })
 
-export type CreateUserInput = z.infer<typeof createUserSchema>
-export type UpdateUserInput = z.infer<typeof updateUserSchema>
-export type UserListQuery = z.infer<typeof userListQuerySchema>
+export const createCategorySchema = z.object({
+  name: z.string().min(3, "اسم الفئة يجب ان لايقل عن 3 احرف"),
+  description: z.string().optional(),
+})
+
+export type CreateUserFormData = z.infer<typeof createUserSchema>
+export type UpdateUserFormData = z.infer<typeof updateUserSchema>
 export type SignupFormData = z.infer<typeof signupSchema>
 export type LoginFormData = z.infer<typeof loginSchema>
-export type UpdateProfileInput = z.infer<typeof updateProfileSchema>
+export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
+export type CreateCategoryFormData = z.infer<typeof createCategorySchema>
