@@ -113,6 +113,7 @@ export async function getUsersAction(
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
         { email: { contains: search, mode: "insensitive" } },
+        { studentId: { contains: search, mode: "insensitive" } },
       ]
     }
 
@@ -275,7 +276,13 @@ export async function createUserAction(
       }
     }
 
-    const { name, email, password, role, department, phone } = createUserForm
+    const { name, email, password, role } = createUserForm
+    let { department, phone, studentId } = createUserForm
+
+    // مسح القيمة في حال كانت نص فارغ
+    if (department === "") department = null
+    if (phone === "") phone = null
+    if (role !== "STUDENT" || studentId === "") studentId = null
 
     // التحقق من عدم وجود بريد مكرر
     const existingUser = await prisma.user.findUnique({ where: { email } })
@@ -299,6 +306,7 @@ export async function createUserAction(
         role,
         department,
         phone,
+        studentId,
       },
       select: {
         id: true,
