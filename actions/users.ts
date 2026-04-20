@@ -370,6 +370,8 @@ export async function updateUserAction(
       }
     }
 
+    const dataToUpdate = { ...updateUserForm }
+
     // التحقق من وجود المستخدم
     const existingUser = await prisma.user.findUnique({ where: { id } })
     if (!existingUser) {
@@ -381,14 +383,14 @@ export async function updateUserAction(
     }
 
     // إذا تم توفير كلمة مرور جديدة، قم بتشفيرها
-    if (updateUserForm.password) {
-      updateUserForm.password = await hash(updateUserForm.password, 12)
+    if (dataToUpdate.password) {
+      dataToUpdate.password = await hash(dataToUpdate.password, 12)
     }
 
     // إذا تم تغيير البريد الإلكتروني، تحقق من عدم تكراره
-    if (updateUserForm.email && updateUserForm.email !== existingUser.email) {
+    if (dataToUpdate.email && dataToUpdate.email !== existingUser.email) {
       const emailInUse = await prisma.user.findUnique({
-        where: { email: updateUserForm.email },
+        where: { email: dataToUpdate.email },
       })
       if (emailInUse) {
         return {
@@ -402,7 +404,7 @@ export async function updateUserAction(
     // تحديث بيانات المستخدم
     const user = await prisma.user.update({
       where: { id },
-      data: updateUserForm,
+      data: dataToUpdate,
       select: {
         id: true,
         name: true,
