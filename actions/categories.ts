@@ -1,3 +1,5 @@
+"use server"
+
 import { checkAdmin } from "@/lib/helper"
 import { prisma } from "@/lib/prisma"
 import { CreateCategoryFormData } from "@/lib/validations"
@@ -63,7 +65,7 @@ export async function getCategoriesAction(
 
     const where: Record<string, unknown> = {}
     if (name) {
-      where.OR = [{ title: { contains: name, mode: "insensitive" } }]
+      where.OR = [{ name: { contains: name, mode: "insensitive" } }]
     }
 
     const [categories, total] = await Promise.all([
@@ -120,9 +122,36 @@ export async function getCategoriesAction(
 export async function getCategoryByIdAction(
   id: string
 ): Promise<ActionResponse<CategoryResponse & { _count: { books: number } }>> {
-  return {
-    success: false,
-    error: "No Implementation",
+  try {
+    const category = await prisma.category.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: { books: true },
+        },
+      },
+    })
+
+    if (!category) {
+      return {
+        success: false,
+        error: "Category not found",
+        message: "الفئة غير موجودة",
+      }
+    }
+
+    return { success: true, data: category }
+  } catch (error) {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ ما",
+    }
   }
 }
 
@@ -241,8 +270,35 @@ export async function updateCategoryAction(
 export async function deleteCategoryAction(
   id: string
 ): Promise<ActionResponse<CategoryResponse>> {
-  return {
-    success: false,
-    error: "No Implementation",
+  try {
+    const isAdmin = await checkAdmin()
+    if (!isAdmin) {
+      return {
+        success: false,
+        error: "Forbidden",
+        message: "لا تملك صلاحية الوصول الى هذه الصفحة",
+      }
+    }
+
+    const existingCategory = await prisma.category.findUnique({ where: { id } })
+    if (!existingCategory) {
+      return {
+        success: false,
+        error: "Category not found",
+        message: "لا يوجد فئة بهذا المعرف",
+      }
+    }
+
+    const category = await prisma.category.delete({
+      where: { id },
+    })
+
+    return { success: true, data: category }
+  } catch (error) {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ ما",
+    }
   }
 }
