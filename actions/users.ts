@@ -18,7 +18,7 @@ type SearchUsersParams = {
   page: number
   limit: number
   search?: string | undefined
-  role?: string | undefined
+  roles?: string[] | undefined
   isActive?: boolean | undefined
 }
 
@@ -88,11 +88,11 @@ export async function getUsersAction(
       }
     }
 
-    const { page, limit, role, isActive, search } = params
+    const { page, limit, roles, isActive, search } = params
 
     // بناء شروط البحث والتصفية
     const where: Record<string, unknown> = {}
-    if (role) where.role = role
+    if (roles) where.role = { in: roles }
     if (isActive !== undefined) where.isActive = isActive
     if (search) {
       // البحث في الاسم والبريد الالكتروني
@@ -172,16 +172,6 @@ export async function getUserByIdAction(
   id: string
 ): Promise<ActionResponse<UserResponse & { _count: { rentals: number } }>> {
   try {
-    // التحقق من صلاحيات المدير
-    const isAdmin = await checkAdmin()
-    if (!isAdmin) {
-      return {
-        success: false,
-        error: "Forbidden",
-        message: "لا تملك صلاحية الوصول الى هذه الصفحة",
-      }
-    }
-
     // جلب المستخدم مع عدد استعاراته
     const user = await prisma.user.findUnique({
       where: { id },

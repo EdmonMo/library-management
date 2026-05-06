@@ -1,6 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { TrendingDown, TrendingUp } from "lucide-react"
-import { JSX, Component } from "react"
+
+type Props = {
+  title: string
+  value: string | number
+  trend?: string
+  trendValue?: string
+  icon: any
+  color: string
+}
 
 /**
  * StatCard Component
@@ -22,7 +30,7 @@ export default function StatCard({
   trendValue,
   icon: Icon,
   color,
-}) {
+}: Props) {
   // إنشاء كلاسات CSS ديناميكية بناءً على اللون المحدد
   const bgColorClass = `bg-${color}-50`
   const textColorClass = `text-${color}-500`
