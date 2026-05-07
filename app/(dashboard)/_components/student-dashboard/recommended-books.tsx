@@ -25,7 +25,7 @@ export default async function RecommendedBooks() {
             <CardTitle>كتب مقترحة لك</CardTitle>
             <CardDescription>أكثر الكتب طلباً والمتاحة حالياً</CardDescription>
           </div>
-          <Link href="/student/books">
+          <Link href="/books">
             <Button variant="ghost" size="sm" className="gap-1">
               عرض الكل
               <ArrowLeft className="h-4 w-4" />

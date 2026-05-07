@@ -1,23 +1,4 @@
 import { Users, Clock, AlertCircle, Book, ChevronLeft } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import StatCard from "../stat-card"
 import { BooksDistribution, OrdersChart } from "./charts"
 import RecentRequestsTable from "./recent-requests-table"

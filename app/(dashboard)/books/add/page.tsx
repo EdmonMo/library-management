@@ -1,4 +1,3 @@
-// app/(dashboard)/books/add-book/page.jsx
 import AddBookForm from "../_components/add-book-form"
 
 export default function AddBookPage() {

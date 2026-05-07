@@ -21,7 +21,7 @@ export default function DashboardRequests() {
               متابعة حالة طلبات الاستعارة والإرجاع
             </CardDescription>
           </div>
-          <Link href="/student/my-requests">
+          <Link href="/my-requests">
             <Button variant="ghost" size="sm" className="gap-1">
               عرض الكل
               <ArrowLeft className="h-4 w-4" />
