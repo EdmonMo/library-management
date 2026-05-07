@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { getBooksAction } from "@/actions/books"
-import BooksTable from "./admin-book-list"
+import BooksTable from "./admin-books-list"
 import BooksFilter from "./books-filter"
 
 export default async function AdminBooksPage() {

@@ -7,9 +7,9 @@ import {
 } from "@/components/ui/card"
 import { BookListResponse } from "@/types/types"
 import { DataTable } from "@/components/data-table"
-import { studentBookColumns } from "./columns"
+import { adminBookColumns } from "./columns"
 
-export default function StudentBooksTable({
+export default function BooksTable({
   initialData,
 }: {
   initialData: BookListResponse
@@ -21,7 +21,7 @@ export default function StudentBooksTable({
         <CardDescription>إجمالي {initialData.total} كتاب</CardDescription>
       </CardHeader>
       <CardContent>
-        <DataTable columns={studentBookColumns} data={initialData.books} />
+        <DataTable columns={adminBookColumns} data={initialData.books} />
       </CardContent>
     </Card>
   )
