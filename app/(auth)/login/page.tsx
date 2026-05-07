@@ -179,24 +179,24 @@ export default function Login() {
           <button
             onClick={() => {
               // تعيين بيانات مدير النظام (اسم المستخدم)
-              setValue("email", "ahmed_mohamed")
-              setValue("password", "123456")
+              setValue("email", "admin@library.com")
+              setValue("password", "123123123")
             }}
             className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
           >
             <div className="font-medium text-gray-700">مدير النظام</div>
-            <div className="text-gray-400">ahmed_mohamed</div>
+            <div className="text-gray-400">Admin</div>
           </button>
           <button
             onClick={() => {
               // تعيين بيانات أمين المكتبة (اسم المستخدم)
-              setValue("email", "sara_ahmed")
-              setValue("password", "123456")
+              setValue("email", "employee@library.com")
+              setValue("password", "123123123")
             }}
             className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
           >
-            <div className="font-medium text-gray-700">أمين مكتبة</div>
-            <div className="text-gray-400">sara_ahmed</div>
+            <div className="font-medium text-gray-700">موظف</div>
+            <div className="text-gray-400">Employee</div>
           </button>
         </div>
 
@@ -205,24 +205,13 @@ export default function Login() {
           <button
             onClick={() => {
               // تعيين بيانات مدير النظام (البريد الإلكتروني)
-              setValue("email", "ahmed@library.com")
-              setValue("password", "123456")
+              setValue("email", "student@library.com")
+              setValue("password", "123123123")
             }}
             className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
           >
-            <div className="font-medium text-gray-700">مدير النظام</div>
-            <div className="text-gray-400">ahmed@library.com</div>
-          </button>
-          <button
-            onClick={() => {
-              // تعيين بيانات أمين المكتبة (البريد الإلكتروني)
-              setValue("email", "sara@library.com")
-              setValue("password", "123456")
-            }}
-            className="flex-1 rounded-lg bg-gray-50 p-2 text-xs transition-colors hover:bg-gray-100"
-          >
-            <div className="font-medium text-gray-700">أمين مكتبة</div>
-            <div className="text-gray-400">sara@library.com</div>
+            <div className="font-medium text-gray-700">طالب</div>
+            <div className="text-gray-400">Student</div>
           </button>
         </div>
         {/* حقوق النشر في الشاشات الصغيرة (تظهر فقط عندما يكون القسم الأيمن مخفياً) */}
