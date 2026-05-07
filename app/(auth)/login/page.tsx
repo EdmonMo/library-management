@@ -60,25 +60,8 @@ export default function Login() {
 
     const res = await loginAction(data)
 
-    // البحث عن مستخدم مطابق لاسم المستخدم/البريد الإلكتروني وكلمة المرور
-    // const user = demoUsers.find(
-    //   (user) =>
-    //     (user.username === data.email || user.email === data.email) &&
-    //     user.password === data.password
-    // )
-
     if (res.success) {
-      router.push("/dashboard")
-      // تخزين بيانات المستخدم في localStorage للاستمرار في الجلسة
-      // localStorage.setItem("user", JSON.stringify(user))
-      // تخزين خيار "تذكرني" إذا تم تحديده
-      // if (data.rememberMe) {
-      //   localStorage.setItem("rememberMe", "true")
-      // }
-      // عرض رسالة نجاح مع اسم المستخدم
-      // toast.success(`مرحباً ${user.name}`)
-      // التوجيه إلى لوحة التحكم (Dashboard)
-      // router.push("/dashboard")
+      router.push("/")
     } else {
       // عرض رسالة خطأ للمستخدم
       toast.error("بيانات الدخول غير صحيحة")

@@ -1,5 +1,4 @@
 import { Noto_Sans_Arabic } from "next/font/google"
-
 import "./globals.css"
 import { cn } from "@/lib/utils"
 import { DirectionProvider } from "@base-ui/react"
@@ -16,7 +15,7 @@ export const metadata = {
   description: "نظام متكامل لإدارة المكتبات",
 }
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   return (
     <html
       lang="ar"
