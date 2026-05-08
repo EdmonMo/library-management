@@ -1,140 +1,172 @@
-// export async function getProfileAction(): Promise<
-//   ActionResponse<UserResponse>
-// > {
-//   try {
-//     const session = await getServerSession()
-//     if (!session) {
-//       return { success: false, error: "Unauthorized" }
-//     }
+"use server"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import {
+  ChangePasswordFormData,
+  UpdateProfileFormData,
+} from "@/lib/validations"
+import { ActionResponse, UserResponse } from "@/types/types"
+import { compare, hash } from "bcryptjs"
 
-//     const user = await prisma.user.findUnique({
-//       where: { id: session.user.id },
-//       select: {
-//         id: true,
-//         name: true,
-//         email: true,
-//         role: true,
-//         department: true,
-//         studentId: true,
-//         phone: true,
-//         isActive: true,
-//         createdAt: true,
-//         updatedAt: true,
-//       },
-//     })
+export async function getProfileAction(): Promise<
+  ActionResponse<UserResponse>
+> {
+  const { user: currentUser } = await auth()
+  if (!currentUser) {
+    return {
+      success: false,
+      error: "Unauthorized",
+      message: "لا تملك صلاحية الوصول لهذه الصفحة",
+    }
+  }
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser?.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        department: true,
+        studentId: true,
+        phone: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
 
-//     if (!user) {
-//       return { success: false, error: "User not found" }
-//     }
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+        message: "لم يتم العثور على المستخدم",
+      }
+    }
 
-//     return { success: true, data: user }
-//   } catch {
-//     return { success: false, error: "Internal server error" }
-//   }
-// }
+    return { success: true, data: user }
+  } catch {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ ما",
+    }
+  }
+}
 
-// export async function updateProfileAction(
-//   formData: FormData
-// ): Promise<ActionResponse<UserResponse>> {
-//   try {
-//     const session = await getServerSession()
-//     if (!session) {
-//       return { success: false, error: "Unauthorized" }
-//     }
+export async function updateProfileAction(
+  updateProfileForm: UpdateProfileFormData
+): Promise<ActionResponse<UserResponse>> {
+  try {
+    const { user } = await auth()
+    if (!user) {
+      return {
+        success: false,
+        error: "Unauthorized",
+        message: "لا تملك صلاحية الوصول لهذه الصفحة",
+      }
+    }
 
-//     if (session.user.role !== "STUDENT") {
-//       return {
-//         success: false,
-//         error: "Only students can update their profile here",
-//       }
-//     }
+    if (user.role !== "STUDENT") {
+      return {
+        success: false,
+        error: "Only students can update their profile here",
+        message: "فقط الطالب يستطيع تعديل  معلوماته الشخصية",
+      }
+    }
 
-//     const validationResult = updateProfileSchema.safeParse({
-//       name: formData.get("name"),
-//       department: formData.get("department"),
-//       phone: formData.get("phone"),
-//     })
+    const { name, department, phone } = updateProfileForm
 
-//     if (!validationResult.success) {
-//       return {
-//         success: false,
-//         error: "Invalid input",
-//         details: validationResult.error.flatten(),
-//       }
-//     }
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { name, department, phone },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        department: true,
+        studentId: true,
+        phone: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
 
-//     const { name, department, phone } = validationResult.data
+    return {
+      success: true,
+      data: updatedUser,
+      message: "تم تحديث معلوماتك بنجاح",
+    }
+  } catch {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ ما",
+    }
+  }
+}
 
-//     const updatedUser = await prisma.user.update({
-//       where: { id: session.user.id },
-//       data: { name, department, phone },
-//       select: {
-//         id: true,
-//         name: true,
-//         email: true,
-//         role: true,
-//         department: true,
-//         studentId: true,
-//         phone: true,
-//         isActive: true,
-//         createdAt: true,
-//         updatedAt: true,
-//       },
-//     })
+export async function changePasswordAction(
+  changePasswordForm: ChangePasswordFormData
+): Promise<ActionResponse> {
+  try {
+    const { user: currentUser } = await auth()
+    if (!currentUser) {
+      return {
+        success: false,
+        error: "Unauthorized",
+        message: "لا تملك صلاحية الوصول لهذه الصفحة",
+      }
+    }
 
-//     return { success: true, data: updatedUser }
-//   } catch {
-//     return { success: false, error: "Internal server error" }
-//   }
-// }
+    const { currentPassword, newPassword } = changePasswordForm
 
-// export async function changePasswordAction(
-//   formData: FormData
-// ): Promise<ActionResponse> {
-//   try {
-//     const session = await getServerSession()
-//     if (!session) {
-//       return { success: false, error: "Unauthorized" }
-//     }
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.id },
+      select: { id: true, password: true },
+    })
 
-//     const validationResult = changePasswordSchema.safeParse({
-//       currentPassword: formData.get("currentPassword"),
-//       newPassword: formData.get("newPassword"),
-//     })
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+        message: "لم يتم العثور على المستخدم",
+      }
+    }
 
-//     if (!validationResult.success) {
-//       return {
-//         success: false,
-//         error: "Invalid input",
-//         details: validationResult.error.flatten(),
-//       }
-//     }
+    const isValid = await compare(currentPassword, user.password)
+    if (!isValid) {
+      return {
+        success: false,
+        error: "Current password is incorrect",
+        message: "كلمة المرور غير صحيحة",
+      }
+    }
 
-//     const { currentPassword, newPassword } = validationResult.data
+    const hashedPassword = await hash(newPassword, 12)
 
-//     const user = await prisma.user.findUnique({
-//       where: { id: session.user.id },
-//       select: { id: true, password: true },
-//     })
+    const isDuplicate = await compare(newPassword, user.password)
+    if (isDuplicate) {
+      return {
+        success: false,
+        error: "New password can't be the same as the old one",
+        message: "كلمة المرور الجديدة لا يمكن ان تطابق القديمة",
+      }
+    }
 
-//     if (!user) {
-//       return { success: false, error: "User not found" }
-//     }
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    })
 
-//     const isValid = await compare(currentPassword, user.password)
-//     if (!isValid) {
-//       return { success: false, error: "Current password is incorrect" }
-//     }
-
-//     const hashedPassword = await hash(newPassword, 12)
-
-//     await prisma.user.update({
-//       where: { id: user.id },
-//       data: { password: hashedPassword },
-//     })
-
-//     return { success: true, message: "Password changed successfully" }
-//   } catch {
-//     return { success: false, error: "Internal server error" }
-//   }
-// }
+    return { success: true, message: "تم تغيير كلمة المرور بنجاح" }
+  } catch {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ ما",
+    }
+  }
+}

@@ -8,6 +8,7 @@ import {
   LogOut,
   Settings,
   ShoppingCart,
+  UserCircle,
   Users,
 } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
@@ -102,10 +103,10 @@ export default function AppSidebar({ user }: { user: User }) {
       </SidebarContent>
       <SidebarFooter>
         <div className="space-y-2 border-t p-4">
-          <Link href="/dashboard/settings" className="block">
+          <Link href="/profile" className="block">
             <Button variant="ghost" className="w-full justify-start gap-3">
-              <Settings className="h-4 w-4" />
-              الإعدادات
+              <UserCircle className="h-4 w-4" />
+              الحساب الشخصي
             </Button>
           </Link>
           <Button

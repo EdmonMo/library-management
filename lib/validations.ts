@@ -64,6 +64,6 @@ export type UpdateUserFormData = z.infer<typeof updateUserSchema>
 export type SignupFormData = z.infer<typeof signupSchema>
 export type LoginFormData = z.infer<typeof loginSchema>
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>
-export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
+export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>
 export type CreateCategoryFormData = z.infer<typeof createCategorySchema>
 export type AddBookFormData = z.infer<typeof addBookSchema>
