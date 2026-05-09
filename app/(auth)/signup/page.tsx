@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -25,27 +25,24 @@ export default function SignupPage() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isPending, startTransition] = useTransition()
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   })
 
-  function onSubmit(data: SignupFormData) {
-    startTransition(async () => {
-      const result = await signupAction(data)
+  async function onSubmit(data: SignupFormData) {
+    const result = await signupAction(data)
 
-      if (result.success) {
-        toast.success(result.message)
-        router.push("/login")
-      } else {
-        toast.error(result.error)
-      }
-    })
+    if (result.success) {
+      toast.success(result.message)
+      router.push("/login")
+    } else {
+      toast.error(result.error)
+    }
   }
 
   return (
@@ -209,10 +206,10 @@ export default function SignupPage() {
 
         <Button
           type="submit"
-          disabled={isPending}
+          disabled={isSubmitting}
           className="h-12 w-full transform rounded-xl bg-linear-to-r from-green-600 to-green-700 py-3 text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:from-green-700 hover:to-green-800 hover:shadow-xl active:scale-95"
         >
-          {isPending ? (
+          {isSubmitting ? (
             <div className="flex items-center justify-center gap-2">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
               <span className="text-base font-medium">

@@ -1,5 +1,6 @@
 import { getUsersAction } from "@/actions/users"
 import { getBooksAction } from "@/actions/books"
+import { Author, Book, BookCopy, Category } from "@prisma/client"
 /**
  * واجهات وأنواع البيانات المستخدمة في نظام إدارة المكتبة
  * @packageDocumentation
@@ -234,6 +235,17 @@ export type BookListResponse = {
   total: number
   page: number
   totalPages: number
+}
+
+export type BookDetailedResponse = Book & {
+  authors: Author[]
+  copies: BookCopy[]
+  categories: Category[]
+  _count: {
+    authors: number
+    copies: number
+    categories: number
+  }
 }
 
 /**

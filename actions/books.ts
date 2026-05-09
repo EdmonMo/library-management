@@ -1,7 +1,12 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { ActionResponse, BookListResponse } from "@/types/types"
+import {
+  ActionResponse,
+  BookDetailedResponse,
+  BookListResponse,
+  BookResponse,
+} from "@/types/types"
 
 type SearchBooksParams = {
   page: number
@@ -156,6 +161,30 @@ export async function getBooksAction(
     }
   } catch (error) {
     // في حالة حدوث أي خطأ غير متوقع
+    return { success: false, error: error, message: "حدث خطأ في السيرفر" }
+  }
+}
+export async function getBookById(
+  id: string
+): Promise<ActionResponse<BookDetailedResponse>> {
+  try {
+    const book = await prisma.book.findUnique({
+      where: { id },
+      include: { _count: true, authors: true, categories: true, copies: true },
+    })
+    if (!book) {
+      return {
+        success: false,
+        error: "Not Found",
+        message: "لم يتم العثور على الكتاب",
+      }
+    }
+
+    return {
+      success: true,
+      data: book,
+    }
+  } catch (error) {
     return { success: false, error: error, message: "حدث خطأ في السيرفر" }
   }
 }
