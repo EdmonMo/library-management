@@ -56,8 +56,6 @@ export default async function StudentProfilePage() {
           </Card>
         </div>
       </div>
-
-      <div></div>
     </>
   )
 }
