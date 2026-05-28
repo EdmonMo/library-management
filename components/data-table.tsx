@@ -33,15 +33,36 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   pageSize?: number
+  globalFilter?: string
+  onGlobalFilterChange?: (value: string) => void
+  columnFilters?: ColumnFiltersState
+  onColumnFiltersChange?: (filters: ColumnFiltersState) => void
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pageSize = 10,
+  globalFilter: externalGlobalFilter,
+  onGlobalFilterChange,
+  columnFilters: externalColumnFilters,
+  onColumnFiltersChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [internalColumnFilters, setInternalColumnFilters] = useState<ColumnFiltersState>([])
+  const [internalGlobalFilter, setInternalGlobalFilter] = useState("")
+
+  const isGlobalControlled = externalGlobalFilter !== undefined
+  const globalFilter = isGlobalControlled ? externalGlobalFilter : internalGlobalFilter
+  const setGlobalFilter = isGlobalControlled
+    ? onGlobalFilterChange!
+    : setInternalGlobalFilter
+
+  const isColumnControlled = externalColumnFilters !== undefined
+  const columnFilters = isColumnControlled ? externalColumnFilters : internalColumnFilters
+  const setColumnFilters = isColumnControlled
+    ? onColumnFiltersChange!
+    : setInternalColumnFilters
 
   const table = useReactTable({
     data,
@@ -52,12 +73,15 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: "includesString",
     initialState: {
       pagination: { pageSize },
     },
     state: {
       sorting,
       columnFilters,
+      globalFilter,
     },
   })
 

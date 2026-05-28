@@ -1,6 +1,5 @@
 import { Clock, CheckCircle2, XCircle, FileText } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import RequestsFilter from "./_components/requests-filter"
 import RequestsTable from "./_components/requests-table"
 
 const requestsData = [
@@ -146,7 +145,6 @@ export default function RequestsPage() {
         </Card>
       </div>
 
-      <RequestsFilter />
       <RequestsTable initialData={requestsData} />
     </>
   )

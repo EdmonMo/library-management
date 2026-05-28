@@ -1,10 +1,9 @@
 import { PenLine } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
-import AuthorsFilter from "./_components/authors-filter"
 import Link from "next/link"
 import { getAuthorsAction } from "@/actions/authors"
-import AuthorsTable from "./_components/authors-table"
+import ListPageShell from "@/components/list-page-shell"
+import { authorColumns } from "./_components/columns"
 
 export default async function AuthorsPage() {
   const { data: authors, success } = await getAuthorsAction({
@@ -13,7 +12,9 @@ export default async function AuthorsPage() {
   })
 
   if (!success) {
-    return <div className="text-center text-red-500">Error loading authors</div>
+    return (
+      <div className="text-center text-red-500">Error loading authors</div>
+    )
   }
   return (
     <>
@@ -26,15 +27,21 @@ export default async function AuthorsPage() {
         </p>
       </div>
 
-      <Button className="mb-8 bg-blue-600 shadow-sm hover:bg-blue-700">
-        <Link href="/authors/add" className="flex items-center gap-2">
-          <PenLine className="ml-2 h-4 w-4" />
-          إضافة مؤلف جديد
-        </Link>
-      </Button>
-
-      <AuthorsFilter />
-      <AuthorsTable initialData={authors} />
+      <ListPageShell
+        title="قائمة المؤلفين"
+        description={`إجمالي ${authors.total} مؤلف`}
+        data={authors.authors}
+        columns={authorColumns}
+        searchPlaceholder="اسم المؤلف..."
+        extra={
+          <Button className="bg-blue-600 shadow-sm hover:bg-blue-700">
+            <Link href="/authors/add" className="flex items-center gap-2">
+              <PenLine className="ml-2 h-4 w-4" />
+              إضافة مؤلف جديد
+            </Link>
+          </Button>
+        }
+      />
     </>
   )
 }

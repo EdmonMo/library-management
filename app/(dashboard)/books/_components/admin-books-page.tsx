@@ -10,14 +10,42 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { getBooksAction } from "@/actions/books"
-import BooksTable from "./admin-books-list"
-import BooksFilter from "./books-filter"
+import { getCategoriesAction } from "@/actions/categories"
+import ListPageShell from "@/components/list-page-shell"
+import type { FilterConfig } from "@/components/list-page-shell"
+import { adminBookColumns } from "./columns"
 
 export default async function AdminBooksPage() {
   const initialBooks = await getBooksAction({
     page: 1,
     limit: 20,
   })
+
+  const { data: catData } = await getCategoriesAction({ page: 1, limit: 100 })
+
+  const categoryFilter: FilterConfig = {
+    type: "select",
+    label: "التصنيف",
+    columnId: "categories",
+    options: [
+      { value: "all", label: "كل التصنيفات" },
+      ...(catData?.categories.map((c) => ({
+        value: c.name,
+        label: c.name,
+      })) ?? []),
+    ],
+  }
+
+  const statusFilter: FilterConfig = {
+    type: "select",
+    label: "حالة الكتاب",
+    columnId: "availableCopies",
+    options: [
+      { value: "all", label: "كل الحالات" },
+      { value: "متاح", label: "متاح" },
+      { value: "معار", label: "معار" },
+    ],
+  }
 
   const booksStats = [
     {
@@ -94,8 +122,14 @@ export default async function AdminBooksPage() {
         })}
       </div>
 
-      <BooksFilter />
-      <BooksTable initialData={initialBooks.data} />
+      <ListPageShell
+        title="قائمة الكتب"
+        description={`إجمالي ${initialBooks.data?.total ?? 0} كتاب`}
+        data={initialBooks.data?.books ?? []}
+        columns={adminBookColumns}
+        searchPlaceholder="عنوان، مؤلف، أو رقم..."
+        filters={[categoryFilter, statusFilter]}
+      />
     </>
   )
 }

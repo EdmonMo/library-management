@@ -1,6 +1,6 @@
 import { getUsersAction } from "@/actions/users"
-import StudentsFilter from "./_components/students-filter"
-import StudentsTable from "./_components/students-table"
+import ListPageShell from "@/components/list-page-shell"
+import { studentColumns } from "./_components/columns"
 
 export default async function MembersPage() {
   const { data: users, success } = await getUsersAction({
@@ -9,7 +9,7 @@ export default async function MembersPage() {
     roles: ["STUDENT"],
   })
 
-  if (success)
+  if (success) {
     return (
       <>
         <div className="mb-8">
@@ -21,8 +21,14 @@ export default async function MembersPage() {
           </p>
         </div>
 
-        <StudentsFilter />
-        <StudentsTable initialData={users} />
+        <ListPageShell
+          title="قائمة الطلاب"
+          description={`إجمالي ${users.total} طالب`}
+          data={users.users}
+          columns={studentColumns}
+          searchPlaceholder="اسم، بريد، أو رقم..."
+        />
       </>
     )
+  }
 }

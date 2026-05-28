@@ -136,8 +136,11 @@ export const adminBookColumns: ColumnDef<BookResponse>[] = [
   {
     accessorKey: "categories",
     header: "التصنيف",
-    // Disable sorting on array columns
     enableSorting: false,
+    filterFn: (row, _columnId, filterValue: string) => {
+      const cats = (row.getValue("categories") as { name: string }[]) ?? []
+      return cats.some((c) => c.name === filterValue)
+    },
     cell: ({ row }) => {
       const categories = row.original.categories
       return categories[0] ? (
@@ -152,6 +155,12 @@ export const adminBookColumns: ColumnDef<BookResponse>[] = [
     header: ({ column }) => (
       <SortableHeader column={column}>النسخ المتاحة</SortableHeader>
     ),
+    filterFn: (row, _columnId, filterValue: string) => {
+      const copies = row.getValue("availableCopies") as number
+      if (filterValue === "متاح") return copies > 0
+      if (filterValue === "معار") return copies === 0
+      return true
+    },
     cell: ({ row }) => (
       <BookAvailablityBadge availableCopies={row.getValue("availableCopies")} />
     ),
@@ -189,6 +198,10 @@ export const studentBookColumns: ColumnDef<BookResponse>[] = [
     accessorKey: "categories",
     header: "التصنيف",
     enableSorting: false,
+    filterFn: (row, _columnId, filterValue: string) => {
+      const cats = (row.getValue("categories") as { name: string }[]) ?? []
+      return cats.some((c) => c.name === filterValue)
+    },
     cell: ({ row }) => {
       const categories = row.original.categories
       return categories[0] ? (
@@ -203,6 +216,12 @@ export const studentBookColumns: ColumnDef<BookResponse>[] = [
     header: ({ column }) => (
       <SortableHeader column={column}>النسخ المتاحة</SortableHeader>
     ),
+    filterFn: (row, _columnId, filterValue: string) => {
+      const copies = row.getValue("availableCopies") as number
+      if (filterValue === "متاح") return copies > 0
+      if (filterValue === "معار") return copies === 0
+      return true
+    },
     cell: ({ row }) => (
       <BookAvailablityBadge availableCopies={row.getValue("availableCopies")} />
     ),
