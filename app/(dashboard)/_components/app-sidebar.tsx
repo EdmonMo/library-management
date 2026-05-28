@@ -9,6 +9,7 @@ import {
   PenLine,
   Settings,
   ShoppingCart,
+  Tags,
   UserCircle,
   Users,
 } from "lucide-react"
@@ -49,6 +50,7 @@ export default function AppSidebar({ user }: { user: User }) {
       },
       { icon: Book, label: "الكتب", href: "/books" },
       { icon: PenLine, label: "المؤلفون", href: "/authors" },
+      { icon: Tags, label: "التصنيفات", href: "/categories" },
       { icon: Users, label: "الموظفين", href: "/employees" },
       { icon: GraduationCap, label: "الطلاب", href: "/students" },
       { icon: ShoppingCart, label: "الطلبات", href: "/requests" },
