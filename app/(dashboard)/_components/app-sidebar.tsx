@@ -59,7 +59,7 @@ export default function AppSidebar({ user }: { user: User }) {
         href: "/",
       },
       { icon: Book, label: "الكتب", href: "/books" },
-      { icon: ShoppingCart, label: "طلباتي", href: "/my-requests" },
+      { icon: ShoppingCart, label: "استعاراتي", href: "/my-loans" },
     ]
   }
 
@@ -104,14 +104,20 @@ export default function AppSidebar({ user }: { user: User }) {
       <SidebarFooter>
         <div className="space-y-2 border-t p-4">
           <Link href="/profile" className="block">
-            <Button variant="ghost" className="w-full justify-start gap-3">
+            <Button
+              variant="ghost"
+              className={`h-10 w-full justify-start gap-3 ${
+                pathname === "/profile" &&
+                "bg-blue-600 text-white hover:bg-blue-700 hover:text-white"
+              }`}
+            >
               <UserCircle className="h-4 w-4" />
               الحساب الشخصي
             </Button>
           </Link>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700"
+            className="h-10 w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
