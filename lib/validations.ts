@@ -47,6 +47,11 @@ export const createCategorySchema = z.object({
   description: z.string().optional(),
 })
 
+export const createAuthorSchema = z.object({
+  name: z.string().min(1, "اسم المؤلف مطلوب"),
+  biography: z.string().optional(),
+})
+
 export const addBookSchema = z.object({
   title: z.string().min(1, "عنوان الكتاب مطلوب"),
   isbn: z.string().min(1, "رقم ISBN مطلوب"),
@@ -66,4 +71,5 @@ export type LoginFormData = z.infer<typeof loginSchema>
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>
 export type CreateCategoryFormData = z.infer<typeof createCategorySchema>
+export type CreateAuthorFormData = z.infer<typeof createAuthorSchema>
 export type AddBookFormData = z.infer<typeof addBookSchema>

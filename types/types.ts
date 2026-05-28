@@ -300,3 +300,18 @@ export type CategoryListResponse = {
   page: number
   totalPages: number
 }
+
+export type AuthorResponse = {
+  id: string
+  name: string
+  biography: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type AuthorListResponse = {
+  authors: AuthorResponse[]
+  total: number
+  page: number
+  totalPages: number
+}
