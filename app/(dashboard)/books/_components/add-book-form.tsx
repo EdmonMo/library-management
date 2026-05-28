@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import {
   Book,
   Building2,
+  Camera,
   FileText,
   Globe,
   Hash,
@@ -302,6 +303,28 @@ export default function AddBookForm() {
               placeholder="اكتب نبذة مختصرة عن محتوى الكتاب وأهميته..."
               {...register("description")}
             />
+          </div>
+
+          {/* Cover Image */}
+          <div className="space-y-2">
+            <Label htmlFor="coverImage">رابط الصورة</Label>
+            <div className="relative">
+              <Input
+                id="coverImage"
+                type="url"
+                placeholder="https://www.myimage.com/image.png"
+                className="pr-10 font-mono"
+                {...register("coverImage")}
+              />
+              <div className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400">
+                <Camera className="h-4 w-4" />
+              </div>
+            </div>
+            {errors.coverImage && (
+              <p className="text-sm text-red-500">
+                {errors.coverImage.message}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

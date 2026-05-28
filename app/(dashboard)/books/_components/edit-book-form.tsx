@@ -295,8 +295,10 @@ export default function EditBookForm({
                 <Camera className="h-4 w-4" />
               </div>
             </div>
-            {errors.isbn && (
-              <p className="text-sm text-red-500">{errors.isbn.message}</p>
+            {errors.coverImage && (
+              <p className="text-sm text-red-500">
+                {errors.coverImage.message}
+              </p>
             )}
           </div>
         </CardContent>

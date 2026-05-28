@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
 import { BookResponse } from "@/types/types"
 import { Badge } from "@/components/ui/badge"
@@ -10,10 +11,106 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Edit, Ellipsis, Eye, Trash2 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import BookAvailablityBadge from "./book-availability-badge"
 import { SortableHeader } from "@/components/data-table"
+import { deleteBookAction } from "@/actions/books"
+import { toast } from "sonner"
+
+function DeleteBookDialog({
+  book,
+  open,
+  onOpenChange,
+}: {
+  book: BookResponse
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const router = useRouter()
+
+  const handleDelete = async () => {
+    const result = await deleteBookAction(book.id)
+    if (result.success) {
+      toast.success("تم حذف الكتاب بنجاح")
+      router.refresh()
+    } else {
+      toast.error(result.message || "حدث خطأ")
+    }
+    onOpenChange(false)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>تأكيد الحذف</DialogTitle>
+          <DialogDescription>
+            هل أنت متأكد من حذف &laquo;{book.title}&raquo;؟
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            إلغاء
+          </Button>
+          <Button variant="destructive" onClick={handleDelete}>
+            حذف
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function AdminBookActionsCell({ book }: { book: BookResponse }) {
+  const [deleteOpen, setDeleteOpen] = useState(false)
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="outline">
+              <Ellipsis />
+            </Button>
+          }
+        />
+        <DropdownMenuContent>
+          <DropdownMenuItem>
+            <Link
+              href={`/books/${book.id}`}
+              className="flex items-center gap-2"
+            >
+              <Edit />
+              تعديل
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-red-500 hover:text-red-600"
+            onSelect={() => setTimeout(() => setDeleteOpen(true), 0)}
+          >
+            <Trash2 />
+            حذف
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DeleteBookDialog
+        book={book}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+      />
+    </>
+  )
+}
 
 export const adminBookColumns: ColumnDef<BookResponse>[] = [
   {
@@ -63,32 +160,7 @@ export const adminBookColumns: ColumnDef<BookResponse>[] = [
     id: "actions",
     header: "الإجراءات",
     enableSorting: false,
-    cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button variant="outline">
-              <Ellipsis />
-            </Button>
-          }
-        />
-        <DropdownMenuContent>
-          <DropdownMenuItem>
-            <Link
-              href={`/books/${row.original.id}`}
-              className="flex items-center gap-2"
-            >
-              <Edit />
-              تعديل
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="text-red-500 hover:text-red-600">
-            <Trash2 />
-            حذف
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({ row }) => <AdminBookActionsCell book={row.original} />,
   },
 ]
 

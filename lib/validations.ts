@@ -58,7 +58,10 @@ export const addBookSchema = z.object({
   description: z.string().optional(),
   publisher: z.string().optional(),
   publishedYear: z.date().optional(),
-  coverImage: z.string().url().optional(),
+  coverImage: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.string().url().optional()
+  ),
   categories: z.array(z.string()),
   authors: z.array(z.string()).optional(),
   numberOfCopies: z.number().min(1, "يجب ان يكون هناك نسخة واحدة على الاقل"),
