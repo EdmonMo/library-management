@@ -96,7 +96,7 @@ function AdminBookActionsCell({ book }: { book: BookResponse }) {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-red-500 hover:text-red-600"
-            onSelect={() => setTimeout(() => setDeleteOpen(true), 0)}
+            onClick={() => setTimeout(() => setDeleteOpen(true), 0)}
           >
             <Trash2 />
             حذف
