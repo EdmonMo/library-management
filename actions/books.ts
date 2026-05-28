@@ -1,12 +1,14 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
+import { checkAdmin } from "@/lib/helper"
 import {
   ActionResponse,
   BookDetailedResponse,
   BookListResponse,
   BookResponse,
 } from "@/types/types"
+import type { AddBookFormData } from "@/lib/validations"
 
 type SearchBooksParams = {
   page: number
@@ -187,4 +189,262 @@ export async function getBookById(
   } catch (error) {
     return { success: false, error: error, message: "حدث خطأ في السيرفر" }
   }
+}
+
+export async function createBookAction(
+  formData: AddBookFormData
+): Promise<ActionResponse<BookResponse>> {
+  try {
+    const isAdmin = await checkAdmin()
+    if (!isAdmin) {
+      return {
+        success: false,
+        error: "Forbidden",
+        message: "لا تملك صلاحية الوصول الى هذه الصفحة",
+      }
+    }
+
+    const {
+      title,
+      isbn,
+      description,
+      publisher,
+      publishedYear,
+      coverImage,
+      categories,
+      authors,
+      numberOfCopies,
+    } = formData
+
+    const existingBook = await prisma.book.findUnique({ where: { isbn } })
+    if (existingBook) {
+      return {
+        success: false,
+        error: "ISBN already exists",
+        message: "رقم ISBN مستخدم بالفعل",
+      }
+    }
+
+    const authorIds = await resolveAuthors(authors)
+    const categoryIds = categories
+
+    const book = await prisma.$transaction(async (tx) => {
+      const created = await tx.book.create({
+        data: {
+          title,
+          isbn,
+          description: description ?? null,
+          publisher: publisher ?? null,
+          publishedYear: publishedYear?.getFullYear() ?? null,
+          coverImage: coverImage ?? null,
+          authors: {
+            connect: authorIds.map((id) => ({ id })),
+          },
+          categories: {
+            connect: categoryIds.map((id) => ({ id })),
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          isbn: true,
+          description: true,
+          publisher: true,
+          publishedYear: true,
+          coverImage: true,
+          categories: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      })
+
+      const copyData = Array.from({ length: numberOfCopies }, (_, i) => ({
+        bookId: created.id,
+        copyNumber: i + 1,
+        status: "AVAILABLE" as const,
+        location: null,
+      }))
+
+      await tx.bookCopy.createMany({ data: copyData })
+
+      return created
+    })
+
+    return {
+      success: true,
+      data: {
+        ...book,
+        totalCopies: numberOfCopies,
+        availableCopies: numberOfCopies,
+      },
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ في السيرفر",
+    }
+  }
+}
+
+export async function updateBookAction(
+  id: string,
+  formData: AddBookFormData
+): Promise<ActionResponse<BookResponse>> {
+  try {
+    const isAdmin = await checkAdmin()
+    if (!isAdmin) {
+      return {
+        success: false,
+        error: "Forbidden",
+        message: "لا تملك صلاحية الوصول الى هذه الصفحة",
+      }
+    }
+
+    const {
+      title,
+      isbn,
+      description,
+      publisher,
+      publishedYear,
+      coverImage,
+      categories,
+      authors,
+    } = formData
+
+    const existingBook = await prisma.book.findUnique({ where: { id } })
+    if (!existingBook) {
+      return {
+        success: false,
+        error: "Not found",
+        message: "الكتاب غير موجود",
+      }
+    }
+
+    if (isbn && isbn !== existingBook.isbn) {
+      const isbnInUse = await prisma.book.findUnique({ where: { isbn } })
+      if (isbnInUse) {
+        return {
+          success: false,
+          error: "ISBN already exists",
+          message: "رقم ISBN مستخدم بالفعل",
+        }
+      }
+    }
+
+    const authorIds = await resolveAuthors(authors)
+
+    const book = await prisma.book.update({
+      where: { id },
+      data: {
+        title,
+        isbn,
+        description: description ?? null,
+        publisher: publisher ?? null,
+        publishedYear: publishedYear?.getFullYear() ?? null,
+        coverImage: coverImage ?? null,
+        authors: {
+          set: [],
+          connect: authorIds.map((id) => ({ id })),
+        },
+        categories: {
+          set: [],
+          connect: categories.map((id) => ({ id })),
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        isbn: true,
+        description: true,
+        publisher: true,
+        publishedYear: true,
+        coverImage: true,
+        categories: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: { copies: true },
+        },
+        copies: {
+          select: { status: true },
+        },
+      },
+    })
+
+    const { _count, copies, ...bookData } = book
+
+    return {
+      success: true,
+      data: {
+        ...bookData,
+        totalCopies: _count.copies,
+        availableCopies: copies.filter((c) => c.status === "AVAILABLE").length,
+      },
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ ما",
+    }
+  }
+}
+
+export async function deleteBookAction(
+  id: string
+): Promise<ActionResponse<void>> {
+  try {
+    const isAdmin = await checkAdmin()
+    if (!isAdmin) {
+      return {
+        success: false,
+        error: "Forbidden",
+        message: "لا تملك صلاحية الوصول الى هذه الصفحة",
+      }
+    }
+
+    const activeRentals = await prisma.rental.count({
+      where: {
+        bookCopy: { bookId: id },
+        status: { in: ["ACTIVE", "OVERDUE"] },
+      },
+    })
+
+    if (activeRentals > 0) {
+      return {
+        success: false,
+        error: "Book has active rentals",
+        message: "لا يمكن حذف الكتاب لأنه يحتوي على استعارات نشطة",
+      }
+    }
+
+    await prisma.book.delete({ where: { id } })
+
+    return { success: true, message: "تم حذف الكتاب بنجاح" }
+  } catch (error) {
+    return {
+      success: false,
+      error: "Internal server error",
+      message: "حدث خطأ ما",
+    }
+  }
+}
+
+async function resolveAuthors(names: string[] | undefined): Promise<string[]> {
+  if (!names || names.length === 0) return []
+
+  const results: string[] = []
+  for (const name of names) {
+    if (!name || !name.trim()) continue
+    const trimmed = name.trim()
+
+    const author = await prisma.author.upsert({
+      where: { name: trimmed },
+      update: {},
+      create: { name: trimmed },
+    })
+    results.push(author.id)
+  }
+  return results
 }

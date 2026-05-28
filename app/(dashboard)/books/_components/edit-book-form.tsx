@@ -28,6 +28,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { updateBookAction } from "@/actions/books"
+import { toast } from "sonner"
 import { BookDetailedResponse, CategoryResponse } from "@/types/types"
 import { DatePicker } from "@/components/ui/date-picker"
 
@@ -38,6 +41,8 @@ export default function EditBookForm({
   book: BookDetailedResponse
   allCategories: CategoryResponse[]
 }) {
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -53,14 +58,23 @@ export default function EditBookForm({
       description: book.description,
       coverImage: book.coverImage,
       numberOfCopies: book._count.copies,
-      publishedYear: new Date(book.publishedYear.toString()),
+      publishedYear: book.publishedYear
+        ? new Date(book.publishedYear.toString())
+        : undefined,
       authors: book.authors.map((author) => author.name),
     },
   })
 
-  const onSubmit = (data: AddBookFormData) => {
-    console.log("Form submitted:", data)
-    // Handle form submission here
+  const onSubmit = async (data: AddBookFormData) => {
+    const result = await updateBookAction(book.id, data)
+
+    if (result.success) {
+      toast.success("تم تحديث الكتاب بنجاح")
+      router.push("/books")
+      router.refresh()
+    } else {
+      toast.error(result.message || "حدث خطأ")
+    }
   }
 
   return (
@@ -233,24 +247,6 @@ export default function EditBookForm({
               />
             </div>
 
-            {/* Number of Copies */}
-            <div className="space-y-2">
-              <Label htmlFor="numberOfCopies">
-                عدد النسخ <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="numberOfCopies"
-                type="number"
-                min={1}
-                {...register("numberOfCopies", { valueAsNumber: true })}
-              />
-              {errors.numberOfCopies && (
-                <p className="text-sm text-red-500">
-                  {errors.numberOfCopies.message}
-                </p>
-              )}
-            </div>
-
             {/* Publisher */}
             <div className="space-y-2">
               <Label htmlFor="publisher">دار النشر</Label>
@@ -320,11 +316,16 @@ export default function EditBookForm({
         <Button
           className="flex-1 gap-2 shadow-lg shadow-blue-500/30 sm:flex-none"
           type="submit"
+          disabled={isSubmitting}
         >
           <Save className="h-4 w-4" />
           {isSubmitting ? "جارٍ الحفظ..." : " حفظ الكتاب"}
         </Button>
-        <Button variant="outline" className="flex-1 gap-2 sm:flex-none">
+        <Button
+          variant="outline"
+          className="flex-1 gap-2 sm:flex-none"
+          onClick={() => router.push("/books")}
+        >
           <X className="h-4 w-4" />
           إلغاء الأمر
         </Button>

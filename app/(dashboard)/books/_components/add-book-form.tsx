@@ -22,15 +22,16 @@ import {
 } from "lucide-react"
 import { addBookSchema, type AddBookFormData } from "@/lib/validations"
 import { getCategoriesAction } from "@/actions/categories"
+import { createBookAction } from "@/actions/books"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 type Category = {
   id: string
@@ -80,9 +81,16 @@ export default function AddBookForm() {
     },
   })
 
-  const onSubmit = (data: AddBookFormData) => {
-    console.log("Form submitted:", data)
-    // Handle form submission here
+  const onSubmit = async (data: AddBookFormData) => {
+    const result = await createBookAction(data)
+
+    if (result.success) {
+      toast.success("تم إضافة الكتاب بنجاح")
+      router.push("/books")
+      router.refresh()
+    } else {
+      toast.error(result.message || "حدث خطأ")
+    }
   }
 
   return (
@@ -312,6 +320,7 @@ export default function AddBookForm() {
         <Button
           className="flex-1 gap-2 shadow-lg shadow-blue-500/30 sm:flex-none"
           type="submit"
+          disabled={isSubmitting}
         >
           <Save className="h-4 w-4" />
           {isSubmitting ? "جارٍ الحفظ..." : " حفظ الكتاب"}
