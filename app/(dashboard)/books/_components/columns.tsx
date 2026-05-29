@@ -140,10 +140,14 @@ export const adminBookColumns: ColumnDef<BookResponse>[] = [
     enableSorting: false,
     cell: ({ row }) => {
       const categories = row.original.categories
-      return categories[0] ? (
-        <Badge variant="secondary" className="font-normal">
-          {categories[0].name}
-        </Badge>
+      return categories.length ? (
+        <div className="flex flex-wrap gap-1">
+          {categories.map((cat) => (
+            <Badge key={cat.id} variant="secondary" className="font-normal">
+              {cat.name}
+            </Badge>
+          ))}
+        </div>
       ) : null
     },
   },
@@ -191,10 +195,14 @@ export const studentBookColumns: ColumnDef<BookResponse>[] = [
     enableSorting: false,
     cell: ({ row }) => {
       const categories = row.original.categories
-      return categories[0] ? (
-        <Badge variant="secondary" className="font-normal">
-          {categories[0].name}
-        </Badge>
+      return categories.length ? (
+        <div className="flex flex-wrap gap-1">
+          {categories.map((cat) => (
+            <Badge key={cat.id} variant="secondary" className="font-normal">
+              {cat.name}
+            </Badge>
+          ))}
+        </div>
       ) : null
     },
   },
