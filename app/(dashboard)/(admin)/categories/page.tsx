@@ -1,15 +1,21 @@
+import { Suspense } from "react"
 import { Tags } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import CategoriesFilter from "./_components/categories-filter"
 import Link from "next/link"
 import { getCategoriesAction } from "@/actions/categories"
 import CategoriesTable from "./_components/categories-table"
 
-export default async function CategoriesPage() {
+export default async function CategoriesPage(props: {
+  searchParams: Promise<{ name?: string }>
+}) {
+  const searchParams = await props.searchParams
   const { data: categories, success } = await getCategoriesAction({
     page: 1,
     limit: 20,
+    name: searchParams.name || undefined,
   })
 
   if (!success) {
@@ -37,7 +43,22 @@ export default async function CategoriesPage() {
         </Link>
       </Button>
 
-      <CategoriesFilter />
+      <Suspense
+        fallback={
+          <Card className="mb-8">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                  <div className="mb-2 block h-4 w-16 animate-pulse rounded bg-muted" />
+                  <div className="h-10 animate-pulse rounded-md bg-muted" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
+        <CategoriesFilter />
+      </Suspense>
       <CategoriesTable initialData={categories} />
     </>
   )

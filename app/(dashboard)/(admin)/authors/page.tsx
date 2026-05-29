@@ -1,15 +1,21 @@
+import { Suspense } from "react"
 import { PenLine } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import AuthorsFilter from "./_components/authors-filter"
 import Link from "next/link"
 import { getAuthorsAction } from "@/actions/authors"
 import AuthorsTable from "./_components/authors-table"
 
-export default async function AuthorsPage() {
+export default async function AuthorsPage(props: {
+  searchParams: Promise<{ name?: string }>
+}) {
+  const searchParams = await props.searchParams
   const { data: authors, success } = await getAuthorsAction({
     page: 1,
     limit: 20,
+    name: searchParams.name || undefined,
   })
 
   if (!success) {
@@ -33,7 +39,22 @@ export default async function AuthorsPage() {
         </Link>
       </Button>
 
-      <AuthorsFilter />
+      <Suspense
+        fallback={
+          <Card className="mb-8">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                  <div className="mb-2 block h-4 w-16 animate-pulse rounded bg-muted" />
+                  <div className="h-10 animate-pulse rounded-md bg-muted" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
+        <AuthorsFilter />
+      </Suspense>
       <AuthorsTable initialData={authors} />
     </>
   )

@@ -1,4 +1,6 @@
 "use client"
+import { useCallback, useState } from "react"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,11 +12,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useState } from "react"
+import { useDebouncedCallback } from "@/hooks/use-debounced-callback"
 
 export default function StudentsFilter() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const currentSearch = searchParams.get("search") || ""
+  const currentStatus = searchParams.get("status") || "all"
+
+  const [searchInput, setSearchInput] = useState(currentSearch)
+
+  const updateParams = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (!value || value === "all") {
+        params.delete(key)
+      } else {
+        params.set(key, value)
+      }
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    },
+    [router, pathname, searchParams],
+  )
+
+  const debouncedSearch = useDebouncedCallback(
+    (value: string) => updateParams("search", value),
+    300,
+  )
+
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value)
+    debouncedSearch(value)
+  }
+
   return (
     <Card className="mb-8">
       <CardContent className="p-6">
@@ -26,21 +58,24 @@ export default function StudentsFilter() {
               <Input
                 placeholder="اسم، بريد، أو رقم..."
                 className="pr-9"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => handleSearchChange(e.target.value)}
               />
             </div>
           </div>
           <div>
             <Label className="mb-2 block text-sm font-medium">الحالة</Label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select
+              value={currentStatus}
+              onValueChange={(v) => updateParams("status", v)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="كل الحالات" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">كل الحالات</SelectItem>
-                <SelectItem value="نشط">نشط</SelectItem>
-                <SelectItem value="معطل">معطل</SelectItem>
+                <SelectItem value="active">نشط</SelectItem>
+                <SelectItem value="inactive">معطل</SelectItem>
               </SelectContent>
             </Select>
           </div>

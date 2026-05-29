@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { Search } from "lucide-react"
 import type { CategoryResponse } from "@/types/types"
+import { useDebouncedCallback } from "@/hooks/use-debounced-callback"
 
 export default function BooksFilter({
   categories = [],
@@ -30,8 +31,6 @@ export default function BooksFilter({
 
   const [searchInput, setSearchInput] = useState(currentSearch)
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
-
   const updateParams = useCallback(
     (key: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -45,12 +44,14 @@ export default function BooksFilter({
     [router, pathname, searchParams],
   )
 
+  const debouncedSearch = useDebouncedCallback(
+    (value: string) => updateParams("search", value),
+    300,
+  )
+
   const handleSearchChange = (value: string) => {
     setSearchInput(value)
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      updateParams("search", value)
-    }, 300)
+    debouncedSearch(value)
   }
 
   return (
