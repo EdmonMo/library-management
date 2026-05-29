@@ -23,13 +23,6 @@ export default function ProfileStats({
         <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3">
           <div className="flex items-center gap-2">
             <Book className="h-5 w-5 text-blue-600" />
-            <span className="text-sm text-gray-600">إجمالي الطلبات</span>
-          </div>
-          <span className="text-2xl font-bold text-blue-600">0</span>
-        </div>
-        <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3">
-          <div className="flex items-center gap-2">
-            <Book className="h-5 w-5 text-blue-600" />
             <span className="text-sm text-gray-600">الكتب المستعارة</span>
           </div>
           <span className="text-2xl font-bold text-blue-600">

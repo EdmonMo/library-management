@@ -39,7 +39,7 @@ export default function Layout({ children }) {
                   نظام إدارة المكتبة
                 </h1>
                 <p className="text-sm leading-relaxed text-blue-100">
-                  نظام متكامل لإدارة الكتب، الأعضاء، والطلبات بكل سهولة
+                  نظام متكامل لإدارة الكتب والأعضاء بكل سهولة
                   واحترافية
                 </p>
 

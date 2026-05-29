@@ -1,8 +1,7 @@
-import { Book, Clock, CheckCircle2 } from "lucide-react"
+import { Book } from "lucide-react"
 import { getUserByIdAction } from "@/actions/users"
 import StatCard from "../stat-card"
 import RecommendedBooks from "./recommended-books"
-import DashboardRequests from "./dashboard-requests"
 import MembershipStaus from "./membership-status"
 
 export default async function StudentDashboard({ userId }: { userId: string }) {
@@ -27,29 +26,16 @@ export default async function StudentDashboard({ userId }: { userId: string }) {
           مرحباً بك، {user.name} 👋
         </h1>
         <p className="text-muted-foreground">
-          هذه هي لوحة تحكمك الشخصية. يمكنك متابعة طلباتك واستعارة الكتب الجديدة.
+          هذه هي لوحة تحكمك الشخصية. يمكنك تصفح واستعارة الكتب الجديدة.
         </p>
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard title="الكتب المستعارة" value={0} icon={Book} color="blue" />
-        <StatCard
-          title="الطلبات المعلقة"
-          value={0}
-          icon={Clock}
-          color="amber"
-        />
-        <StatCard
-          title="الطلبات المكتملة"
-          value={0}
-          icon={CheckCircle2}
-          color="blue"
-        />
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <RecommendedBooks />
-        <DashboardRequests />
       </div>
 
       <MembershipStaus user={user} />

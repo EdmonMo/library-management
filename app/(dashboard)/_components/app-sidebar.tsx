@@ -7,7 +7,6 @@ import {
   Library,
   LogOut,
   PenLine,
-  Settings,
   ShoppingCart,
   Tags,
   UserCircle,
@@ -33,7 +32,7 @@ export default function AppSidebar({ user }: { user: User }) {
   const pathname = usePathname()
 
   const handleLogout = async () => {
-    let res = await logoutAction()
+    const res = await logoutAction()
 
     if (res.success) {
       toast.success("تم تسجيل الخروج بنجاح")
@@ -53,7 +52,6 @@ export default function AppSidebar({ user }: { user: User }) {
       { icon: Tags, label: "التصنيفات", href: "/categories" },
       { icon: Users, label: "الموظفين", href: "/employees" },
       { icon: GraduationCap, label: "الطلاب", href: "/students" },
-      { icon: ShoppingCart, label: "الطلبات", href: "/requests" },
     ]
   } else {
     menuItems = [
@@ -89,7 +87,9 @@ export default function AppSidebar({ user }: { user: User }) {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton
                 className={`h-10 cursor-pointer ${
-                  pathname === item.href &&
+                  (item.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(item.href)) &&
                   "bg-blue-600 text-white hover:bg-blue-700 hover:text-white"
                 }`}
               >
