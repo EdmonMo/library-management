@@ -1,9 +1,10 @@
 import { Tags } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
+import CategoriesFilter from "./_components/categories-filter"
 import Link from "next/link"
 import { getCategoriesAction } from "@/actions/categories"
-import ListPageShell from "@/components/list-page-shell"
-import { categoryColumns } from "./_components/columns"
+import CategoriesTable from "./_components/categories-table"
 
 export default async function CategoriesPage() {
   const { data: categories, success } = await getCategoriesAction({
@@ -29,21 +30,15 @@ export default async function CategoriesPage() {
         </p>
       </div>
 
-      <ListPageShell
-        title="قائمة التصنيفات"
-        description={`إجمالي ${categories.total} تصنيف`}
-        data={categories.categories}
-        columns={categoryColumns}
-        searchPlaceholder="اسم التصنيف..."
-        extra={
-          <Button className="bg-blue-600 shadow-sm hover:bg-blue-700">
-            <Link href="/categories/add" className="flex items-center gap-2">
-              <Tags className="ml-2 h-4 w-4" />
-              إضافة تصنيف جديد
-            </Link>
-          </Button>
-        }
-      />
+      <Button className="mb-8 bg-blue-600 shadow-sm hover:bg-blue-700">
+        <Link href="/categories/add" className="flex items-center gap-2">
+          <Tags className="ml-2 h-4 w-4" />
+          إضافة تصنيف جديد
+        </Link>
+      </Button>
+
+      <CategoriesFilter />
+      <CategoriesTable initialData={categories} />
     </>
   )
 }
