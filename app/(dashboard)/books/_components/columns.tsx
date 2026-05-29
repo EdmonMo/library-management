@@ -143,16 +143,11 @@ export const adminBookColumns: ColumnDef<BookResponse>[] = [
     },
     cell: ({ row }) => {
       const categories = row.original.categories
-      if (categories.length === 0) return null
-      return (
-        <div className="flex flex-wrap gap-1">
-          {categories.map((cat) => (
-            <Badge key={cat.id} variant="secondary" className="text-xs font-normal">
-              {cat.name}
-            </Badge>
-          ))}
-        </div>
-      )
+      return categories[0] ? (
+        <Badge variant="secondary" className="font-normal">
+          {categories[0].name}
+        </Badge>
+      ) : null
     },
   },
   {
@@ -209,16 +204,11 @@ export const studentBookColumns: ColumnDef<BookResponse>[] = [
     },
     cell: ({ row }) => {
       const categories = row.original.categories
-      if (categories.length === 0) return null
-      return (
-        <div className="flex flex-wrap gap-1">
-          {categories.map((cat) => (
-            <Badge key={cat.id} variant="secondary" className="text-xs font-normal">
-              {cat.name}
-            </Badge>
-          ))}
-        </div>
-      )
+      return categories[0] ? (
+        <Badge variant="secondary" className="font-normal">
+          {categories[0].name}
+        </Badge>
+      ) : null
     },
   },
   {
