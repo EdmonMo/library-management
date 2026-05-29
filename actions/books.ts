@@ -14,6 +14,8 @@ type SearchBooksParams = {
   page: number
   limit: number
   search?: string | undefined
+  categoryId?: string | undefined
+  status?: "available" | "rented" | undefined
 }
 
 /**
@@ -89,7 +91,7 @@ export async function getBooksAction(
   params: SearchBooksParams
 ): Promise<ActionResponse<BookListResponse>> {
   try {
-    const { page, limit, search } = params
+    const { page, limit, search, categoryId, status } = params
 
     // بناء شروط البحث بناءً على وجود كلمة البحث
     const where: Record<string, unknown> = {}
@@ -98,6 +100,14 @@ export async function getBooksAction(
         { title: { contains: search, mode: "insensitive" } },
         { isbn: { contains: search, mode: "insensitive" } },
       ]
+    }
+    if (categoryId) {
+      where.categories = { some: { id: categoryId } }
+    }
+    if (status === "available") {
+      where.copies = { some: { status: "AVAILABLE" } }
+    } else if (status === "rented") {
+      where.NOT = { copies: { some: { status: "AVAILABLE" } } }
     }
 
     // جلب الكتب وإجمالي العدد
