@@ -37,7 +37,10 @@ export default async function StudentDashboard({ userId }: { userId: string }) {
         </p>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <MembershipStaus user={user} />
+
+      <div className="mt-8 flex items-start gap-6">
+        <RecommendedBooks />
         <StatCard
           title="الكتب المستعارة"
           value={activeRentals}
@@ -45,12 +48,6 @@ export default async function StudentDashboard({ userId }: { userId: string }) {
           color="blue"
         />
       </div>
-
-      <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RecommendedBooks />
-      </div>
-
-      <MembershipStaus user={user} />
     </>
   )
 }

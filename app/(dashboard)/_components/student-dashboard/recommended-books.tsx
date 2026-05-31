@@ -18,7 +18,7 @@ export default async function RecommendedBooks() {
 
   if (!success) return
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

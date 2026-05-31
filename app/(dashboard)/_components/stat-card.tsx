@@ -36,7 +36,7 @@ export default function StatCard({
   const textColorClass = `text-${color}-500`
 
   return (
-    <Card className="transition-shadow duration-300 hover:shadow-lg">
+    <Card className="h-fit w-full transition-shadow duration-300 hover:shadow-lg">
       <CardContent className="p-6">
         {/* رأس البطاقة: العنوان والقيمة والأيقونة */}
         <div className="mb-4 flex items-start justify-between">
