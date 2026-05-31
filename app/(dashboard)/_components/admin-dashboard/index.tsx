@@ -2,9 +2,13 @@ import { Users, AlertCircle, Book } from "lucide-react"
 import StatCard from "../stat-card"
 import { BooksDistribution, OrdersChart } from "./charts"
 import { getRentalStatsAction } from "@/actions/rentals"
+import { getDashboardChartsAction } from "@/actions/dashboard"
 
 export default async function AdminDashboard() {
-  const { data: stats } = await getRentalStatsAction()
+  const [stats, chartsData] = await Promise.all([
+    getRentalStatsAction(),
+    getDashboardChartsAction(),
+  ])
 
   return (
     <>
@@ -20,33 +24,33 @@ export default async function AdminDashboard() {
       <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="استعارات نشطة"
-          value={stats?.active ?? 0}
+          value={stats?.data?.active ?? 0}
           icon={Book}
           color="blue"
         />
         <StatCard
           title="كتب متأخرة"
-          value={stats?.overdue ?? 0}
+          value={stats?.data?.overdue ?? 0}
           icon={AlertCircle}
           color="red"
         />
         <StatCard
           title="تمت الإعادة"
-          value={stats?.returned ?? 0}
+          value={stats?.data?.returned ?? 0}
           icon={Users}
           color="teal"
         />
         <StatCard
           title="إجمالي الاستعارات"
-          value={stats?.total ?? 0}
+          value={stats?.data?.total ?? 0}
           icon={Book}
           color="teal"
         />
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <BooksDistribution />
-        <OrdersChart />
+        <BooksDistribution categories={chartsData.booksDist} />
+        <OrdersChart activity={chartsData.activity} />
       </div>
     </>
   )
