@@ -2,12 +2,12 @@ import { prisma } from "@/lib/prisma"
 import { hash } from "bcryptjs"
 
 async function main() {
-  console.log("Start seeding...")
+  console.log("بدء البذر...")
 
   const password = await hash("123123123", 12)
 
   // ============================================
-  // 1. CREATE 3 USERS (1 Admin, 1 Employee, 1 Student)
+  // 1. إنشاء 3 مستخدمين (مدير، موظف، طالب)
   // ============================================
   const usersData = [
     {
@@ -15,25 +15,25 @@ async function main() {
       email: "admin@library.com",
       password: password,
       role: "ADMIN" as const,
-      department: "Library Administration",
-      phone: "+1234567890",
+      department: "إدارة المكتبة المركزية",
+      phone: "+963111111111",
     },
     {
       name: "موظف المكتبة",
       email: "employee@library.com",
       password: password,
       role: "EMPLOYEE" as const,
-      department: "Circulation Desk",
-      phone: "+1234567891",
+      department: "قسم الإعارة",
+      phone: "+963222222222",
     },
     {
-      name: "طالب",
+      name: "أحمد علي",
       email: "student@library.com",
       password: password,
       role: "STUDENT" as const,
       studentId: "STU2024001",
-      department: "Computer Science",
-      phone: "+1234567892",
+      department: "كلية الهندسة المعلوماتية",
+      phone: "+963933333333",
     },
   ]
 
@@ -41,44 +41,77 @@ async function main() {
   for (const userData of usersData) {
     const user = await prisma.user.upsert({
       where: { email: userData.email },
-      update: {}, // Don't update existing users
+      update: {},
       create: userData,
     })
     createdUsers.push(user)
-    console.log(`✅ Created/Ensured user: ${user.name} (${user.role})`)
+    console.log(`✅ تم إنشاء المستخدم: ${user.name} (${user.role})`)
   }
 
   // ============================================
-  // 2. CREATE AUTHORS
+  // 2. إنشاء المؤلفين
   // ============================================
   const authorsData = [
     {
-      name: "Harper Lee",
-      biography: "American novelist known for To Kill a Mockingbird",
-    },
-    { name: "George Orwell", biography: "English novelist and critic" },
-    {
-      name: "Jane Austen",
-      biography: "English novelist known for her six major novels",
+      name: "طه حسين",
+      biography: "أديب وناقد مصري، عميد الأدب العربي",
     },
     {
-      name: "F. Scott Fitzgerald",
-      biography: "American novelist and short story writer",
+      name: "نجيب محفوظ",
+      biography: "روائي مصري حائز على جائزة نوبل للآداب",
     },
-    { name: "Paulo Coelho", biography: "Brazilian lyricist and novelist" },
-    { name: "Khaled Hosseini", biography: "Afghan-American novelist" },
-    { name: "Frank Herbert", biography: "American science fiction writer" },
-    { name: "J.R.R. Tolkien", biography: "English writer and philologist" },
     {
-      name: "J.K. Rowling",
-      biography: "British author of Harry Potter series",
+      name: "جبران خليل جبران",
+      biography: "شاعر وكاتب لبناني، أحد رواد المهجر",
     },
-    { name: "Yuval Noah Harari", biography: "Israeli historian and professor" },
-    { name: "Michelle Obama", biography: "American attorney and author" },
-    { name: "Dan Brown", biography: "American thriller writer" },
-    { name: "Agatha Christie", biography: "English mystery writer" },
-    { name: "Andy Weir", biography: "American novelist" },
-    { name: "Gillian Flynn", biography: "American author and screenwriter" },
+    {
+      name: "غسان كنفاني",
+      biography: "كاتب وصحفي فلسطيني، من أبرز أدباء المقاومة",
+    },
+    {
+      name: "عبد الرحمن منيف",
+      biography: "روائي سعودي من أصل أردني",
+    },
+    {
+      name: "أحلام مستغانمي",
+      biography: "روائية وشاعرة جزائرية",
+    },
+    {
+      name: "إحسان عبد القدوس",
+      biography: "روائي وصحفي مصري",
+    },
+    {
+      name: "نزار قباني",
+      biography: "شاعر سوري معاصر",
+    },
+    {
+      name: "علي الوردي",
+      biography: "عالم اجتماع ومؤرخ عراقي",
+    },
+    {
+      name: "الطيب صالح",
+      biography: "روائي سوداني، من أشهر كتاب الرواية العربية",
+    },
+    {
+      name: "محمود درويش",
+      biography: "شاعر فلسطيني وأحد أبرز شعراء العرب",
+    },
+    {
+      name: "حنا مينه",
+      biography: "روائي سوري من رواد الرواية العربية",
+    },
+    {
+      name: "زكريا تامر",
+      biography: "كاتب قصة قصيرة سوري",
+    },
+    {
+      name: "صنع الله إبراهيم",
+      biography: "روائي مصري معاصر",
+    },
+    {
+      name: "واسيني الأعرج",
+      biography: "روائي وأكاديمي جزائري",
+    },
   ]
 
   const createdAuthors = []
@@ -89,34 +122,25 @@ async function main() {
       create: authorData,
     })
     createdAuthors.push(author)
-    console.log(`✅ Created/Ensured author: ${author.name}`)
+    console.log(`✅ تم إنشاء المؤلف: ${author.name}`)
   }
 
   // ============================================
-  // 3. CREATE CATEGORIES
+  // 3. إنشاء التصنيفات
   // ============================================
   const categoriesData = [
-    { name: "Classic Literature", description: "Enduring literary works" },
-    {
-      name: "Dystopian",
-      description: "Speculative fiction exploring social structures",
-    },
-    { name: "Romance", description: "Love and relationship focused stories" },
-    { name: "Adventure", description: "Exciting journeys and quests" },
-    {
-      name: "Historical Fiction",
-      description: "Fictional stories set in historical periods",
-    },
-    { name: "Thriller", description: "Suspenseful and fast-paced" },
-    {
-      name: "Science Fiction",
-      description: "Futuristic and speculative concepts",
-    },
-    { name: "Fantasy", description: "Magical and imaginary worlds" },
-    { name: "Mystery", description: "Crime and detective stories" },
-    { name: "Non-Fiction", description: "Factual and informative" },
-    { name: "Biography", description: "Life stories of real people" },
-    { name: "Young Adult", description: "Literature for young readers" },
+    { name: "أدب كلاسيكي", description: "الأعمال الأدبية الخالدة" },
+    { name: "رواية", description: "قصص روائية طويلة" },
+    { name: "شعر", description: "القصائد والأشعار العربية" },
+    { name: "تاريخ", description: "الكتب التاريخية" },
+    { name: "فلسفة", description: "الدراسات الفلسفية والفكرية" },
+    { name: "علوم", description: "الكتب العلمية والمعرفية" },
+    { name: "خيال علمي", description: "أدب الخيال العلمي والمستقبلي" },
+    { name: "فكر سياسي", description: "الدراسات السياسية والاجتماعية" },
+    { name: "سيرة ذاتية", description: "السير الذاتية والمذكرات" },
+    { name: "قصة قصيرة", description: "المجموعات القصصية" },
+    { name: "أدب أطفال", description: "كتب موجهة للأطفال واليافعين" },
+    { name: "رحلات", description: "أدب الرحلات والمغامرات" },
   ]
 
   const createdCategories = []
@@ -127,284 +151,243 @@ async function main() {
       create: categoryData,
     })
     createdCategories.push(category)
-    console.log(`✅ Created/Ensured category: ${category.name}`)
+    console.log(`✅ تم إنشاء التصنيف: ${category.name}`)
   }
 
   // ============================================
-  // 4. CREATE 20 BOOKS with relationships
+  // 4. إنشاء 20 كتاباً مع العلاقات
   // ============================================
   const booksData = [
     {
-      title: "To Kill a Mockingbird",
-      isbn: "9780061120084",
+      title: "الأيام",
+      isbn: "9789771400014",
       description:
-        "The story of racial injustice and loss of innocence in the American South.",
-      publisher: "HarperCollins",
-      publishedYear: 1960,
-      authors: ["Harper Lee"],
-      categories: ["Classic Literature", "Historical Fiction"],
+        "سيرة ذاتية لعميد الأدب العربي طه حسين، يروي فيها قصة كفاحه منذ الطفولة حتى أصبح أحد أعلام الفكر العربي.",
+      publisher: "دار المعارف",
+      publishedYear: 1929,
+      authors: ["طه حسين"],
+      categories: ["أدب كلاسيكي", "سيرة ذاتية"],
       copies: 3,
     },
     {
-      title: "1984",
-      isbn: "9780451524935",
+      title: "اللص والكلاب",
+      isbn: "9789770913071",
       description:
-        "A dystopian social science fiction novel about totalitarianism.",
-      publisher: "Signet Classics",
-      publishedYear: 1949,
-      authors: ["George Orwell"],
-      categories: ["Dystopian", "Classic Literature", "Science Fiction"],
+        "رواية عن الخيانة والثأر، تتبع حياة سعيد مهران بعد خروجه من السجن.",
+      publisher: "دار الشروق",
+      publishedYear: 1961,
+      authors: ["نجيب محفوظ"],
+      categories: ["رواية", "أدب كلاسيكي"],
       copies: 4,
     },
     {
-      title: "Pride and Prejudice",
-      isbn: "9780141439518",
-      description: "A romantic novel of manners centered on Elizabeth Bennet.",
-      publisher: "Penguin Classics",
-      publishedYear: 1813,
-      authors: ["Jane Austen"],
-      categories: ["Classic Literature", "Romance"],
+      title: "الأجنحة المتكسرة",
+      isbn: "9789953885384",
+      description:
+        "قصة حب مؤثرة تجمع بين الشاب جبران ومحبوبته سلمى في إطار اجتماعي رومانسي.",
+      publisher: "دار النهار",
+      publishedYear: 1912,
+      authors: ["جبران خليل جبران"],
+      categories: ["رواية", "شعر"],
+      copies: 3,
+    },
+    {
+      title: "عائد إلى حيفا",
+      isbn: "9789953890010",
+      description:
+        "رواية عن النكبة الفلسطينية وتجربة اللجوء من خلال عودة سعيد إلى بيته في حيفا.",
+      publisher: "دار العودة",
+      publishedYear: 1969,
+      authors: ["غسان كنفاني"],
+      categories: ["رواية", "فكر سياسي"],
+      copies: 3,
+    },
+    {
+      title: "مدن الملح",
+      isbn: "9789953881005",
+      description:
+        "ملحمة روائية ضخمة عن اكتشاف النفط وتحولات المجتمع في الجزيرة العربية.",
+      publisher: "دار الطليعة",
+      publishedYear: 1984,
+      authors: ["عبد الرحمن منيف"],
+      categories: ["رواية", "تاريخ"],
+      copies: 4,
+    },
+    {
+      title: "ذاكرة الجسد",
+      isbn: "9789953894407",
+      description:
+        "رواية عن الحب والثورة الجزائرية، تفوز بجائزة نجيب محفوظ للآداب.",
+      publisher: "دار الآداب",
+      publishedYear: 1993,
+      authors: ["أحلام مستغانمي"],
+      categories: ["رواية"],
+      copies: 3,
+    },
+    {
+      title: "لا تكن لطيفاً أكثر من اللازم",
+      isbn: "9789770920017",
+      description:
+        "رواية اجتماعية تناقش قضايا المجتمع المصري بأسلوب مشوق.",
+      publisher: "دار أخبار اليوم",
+      publishedYear: 1958,
+      authors: ["إحسان عبد القدوس"],
+      categories: ["رواية", "فكر سياسي"],
       copies: 2,
     },
     {
-      title: "The Great Gatsby",
-      isbn: "9780743273565",
+      title: "قصيدة بيروت",
+      isbn: "9789953882956",
       description:
-        "The story of mysterious millionaire Jay Gatsby and his obsession with Daisy Buchanan.",
-      publisher: "Scribner",
-      publishedYear: 1925,
-      authors: ["F. Scott Fitzgerald"],
-      categories: ["Classic Literature"],
+        "ديوان شعري عن مدينة بيروت وجمالها وألم الحرب.",
+      publisher: "دار اليقظة",
+      publishedYear: 1967,
+      authors: ["نزار قباني"],
+      categories: ["شعر"],
       copies: 3,
     },
     {
-      title: "The Alchemist",
-      isbn: "9780062502174",
-      description: "A philosophical story about following your dreams.",
-      publisher: "HarperOne",
-      publishedYear: 1988,
-      authors: ["Paulo Coelho"],
-      categories: ["Adventure", "Fantasy"],
+      title: "وعاظ السلاطين",
+      isbn: "9789953941209",
+      description:
+        "دراسة في طبيعة الحكم والاستبداد في التاريخ الإسلامي.",
+      publisher: "دار الجمل",
+      publishedYear: 1965,
+      authors: ["علي الوردي"],
+      categories: ["تاريخ", "فكر سياسي"],
+      copies: 2,
+    },
+    {
+      title: "موسم الهجرة إلى الشمال",
+      isbn: "9789953886670",
+      description:
+        "رواية عن صراع الحضارات والهوية، تعد من أفضل مئة رواية عربية.",
+      publisher: "دار العودة",
+      publishedYear: 1966,
+      authors: ["الطيب صالح"],
+      categories: ["أدب كلاسيكي", "رواية"],
       copies: 4,
     },
     {
-      title: "The Kite Runner",
-      isbn: "9781594631931",
+      title: "أحبك أكثر",
+      isbn: "9789953898894",
       description:
-        "Story of friendship, betrayal, and redemption in Afghanistan.",
-      publisher: "Riverhead Books",
-      publishedYear: 2003,
-      authors: ["Khaled Hosseini"],
-      categories: ["Historical Fiction", "Young Adult"],
+        "ديوان شعري يعبر عن أعمق مشاعر الحب والحنين.",
+      publisher: "دار رياض الريس",
+      publishedYear: 2010,
+      authors: ["نزار قباني"],
+      categories: ["شعر"],
       copies: 3,
     },
     {
-      title: "Dune",
-      isbn: "9780441013593",
+      title: "الشرق الأدنى",
+      isbn: "9789953889726",
       description:
-        "Epic science fiction set in a distant future amidst a feudal interstellar society.",
-      publisher: "Ace Books",
-      publishedYear: 1965,
-      authors: ["Frank Herbert"],
-      categories: ["Science Fiction", "Adventure"],
+        "دراسة في تاريخ الشرق الأدنى القديم وعلاقته بالحضارة العربية.",
+      publisher: "دار الوراق",
+      publishedYear: 2015,
+      authors: ["علي الوردي"],
+      categories: ["تاريخ"],
+      copies: 2,
+    },
+    {
+      title: "الشراع والعاصفة",
+      isbn: "9789953892311",
+      description:
+        "رواية بحرية عن حياة الصيادين ونضالهم في الساحل السوري.",
+      publisher: "دار الاتحاد",
+      publishedYear: 1970,
+      authors: ["حنا مينه"],
+      categories: ["رواية", "رحلات"],
       copies: 3,
     },
     {
-      title: "The Hobbit",
-      isbn: "9780547928227",
-      description: "Fantasy novel about the quest of Bilbo Baggins.",
-      publisher: "Houghton Mifflin Harcourt",
-      publishedYear: 1937,
-      authors: ["J.R.R. Tolkien"],
-      categories: ["Fantasy", "Adventure"],
+      title: "صهيل المسافات",
+      isbn: "9789953886602",
+      description:
+        "مجموعة قصص قصيرة تمزج بين الواقع والخيال بأسلوب ساخر.",
+      publisher: "دار المدى",
+      publishedYear: 1985,
+      authors: ["زكريا تامر"],
+      categories: ["قصة قصيرة"],
+      copies: 2,
+    },
+    {
+      title: "تلك الرائحة",
+      isbn: "9789770801239",
+      description:
+        "رواية تجريبية عن السجن والقمع في مصر، من رواد الرواية الحديثة.",
+      publisher: "دار المستقبل",
+      publishedYear: 1966,
+      authors: ["صنع الله إبراهيم"],
+      categories: ["رواية", "فكر سياسي"],
+      copies: 3,
+    },
+    {
+      title: "الإسطبل",
+      isbn: "9789953896500",
+      description:
+        "رواية عن حياة المهاجرين الجزائريين في فرنسا.",
+      publisher: "دار الفارابي",
+      publishedYear: 2005,
+      authors: ["واسيني الأعرج"],
+      categories: ["رواية"],
+      copies: 3,
+    },
+    {
+      title: "أولاد حارتنا",
+      isbn: "9789770907384",
+      description:
+        "رواية رمزية عن تاريخ البشرية من خلال حارة مصرية، حازت جائزة نوبل.",
+      publisher: "دار الشروق",
+      publishedYear: 1959,
+      authors: ["نجيب محفوظ"],
+      categories: ["أدب كلاسيكي", "رواية", "فلسفة"],
+      copies: 4,
+    },
+    {
+      title: "النبي",
+      isbn: "9789953885377",
+      description:
+        "كتاب فلسفي شعري يتناول قضايا الحياة والحب والدين بأسلوب رمزي.",
+      publisher: "دار النهار",
+      publishedYear: 1923,
+      authors: ["جبران خليل جبران"],
+      categories: ["شعر", "فلسفة"],
       copies: 5,
     },
     {
-      title: "Harry Potter and the Sorcerer's Stone",
-      isbn: "9780439708180",
-      description: "First book in the Harry Potter series.",
-      publisher: "Scholastic",
-      publishedYear: 1997,
-      authors: ["J.K. Rowling"],
-      categories: ["Fantasy", "Young Adult"],
-      copies: 6,
-    },
-    {
-      title: "Sapiens: A Brief History of Humankind",
-      isbn: "9780062316097",
-      description: "Exploration of the history of the human species.",
-      publisher: "Harper",
-      publishedYear: 2011,
-      authors: ["Yuval Noah Harari"],
-      categories: ["Non-Fiction"],
-      copies: 2,
-    },
-    {
-      title: "Becoming",
-      isbn: "9781524763138",
-      description: "Memoir by former First Lady Michelle Obama.",
-      publisher: "Crown",
-      publishedYear: 2018,
-      authors: ["Michelle Obama"],
-      categories: ["Biography", "Non-Fiction"],
-      copies: 3,
-    },
-    {
-      title: "The Da Vinci Code",
-      isbn: "9780307474278",
-      description: "Mystery thriller involving religious symbolism.",
-      publisher: "Anchor Books",
-      publishedYear: 2003,
-      authors: ["Dan Brown"],
-      categories: ["Mystery", "Thriller"],
-      copies: 4,
-    },
-    {
-      title: "And Then There Were None",
-      isbn: "9780062073488",
+      title: "أرض البرتقال الحزين",
+      isbn: "9789953890027",
       description:
-        "Classic mystery novel about ten strangers invited to an island.",
-      publisher: "William Morrow",
-      publishedYear: 1939,
-      authors: ["Agatha Christie"],
-      categories: ["Mystery", "Thriller"],
-      copies: 3,
+        "مجموعة قصصية عن معاناة الشعب الفلسطيني تحت الاحتلال.",
+      publisher: "دار العودة",
+      publishedYear: 1963,
+      authors: ["غسان كنفاني"],
+      categories: ["قصة قصيرة", "فكر سياسي"],
+      copies: 2,
     },
     {
-      title: "The Martian",
-      isbn: "9780553418026",
-      description: "Astronaut stranded on Mars struggles to survive.",
-      publisher: "Crown",
-      publishedYear: 2011,
-      authors: ["Andy Weir"],
-      categories: ["Science Fiction", "Adventure"],
-      copies: 4,
-    },
-    {
-      title: "Gone Girl",
-      isbn: "9780307588364",
-      description: "Psychological thriller about a marriage gone wrong.",
-      publisher: "Crown",
-      publishedYear: 2012,
-      authors: ["Gillian Flynn"],
-      categories: ["Thriller", "Mystery"],
-      copies: 3,
-    },
-    {
-      title: "Foundation",
-      isbn: "9780553293357",
+      title: "جدارية",
+      isbn: "9789953888156",
       description:
-        "First book in the Foundation series about the fall of a galactic empire.",
-      publisher: "Bantam Spectra",
-      publishedYear: 1951,
-      authors: ["Isaac Asimov"],
-      categories: ["Science Fiction", "Classic Literature"],
-      copies: 2,
-    },
-    {
-      title: "The Book Thief",
-      isbn: "9780375842207",
-      description: "Story of a young girl in Nazi Germany who steals books.",
-      publisher: "Knopf Books",
-      publishedYear: 2005,
-      authors: ["Markus Zusak"],
-      categories: ["Historical Fiction", "Young Adult"],
-      copies: 3,
-    },
-    {
-      title: "Life of Pi",
-      isbn: "9780156027328",
-      description: "Boy stranded on a lifeboat with a Bengal tiger.",
-      publisher: "Harvest Books",
-      publishedYear: 2001,
-      authors: ["Yann Martel"],
-      categories: ["Adventure", "Fantasy"],
-      copies: 3,
-    },
-    {
-      title: "Moby Dick",
-      isbn: "9781503280786",
-      description: "Obsessive quest of Captain Ahab for the white whale.",
-      publisher: "CreateSpace",
-      publishedYear: 1851,
-      authors: ["Herman Melville"],
-      categories: ["Classic Literature", "Adventure"],
-      copies: 2,
-    },
-    {
-      title: "The Girl with the Dragon Tattoo",
-      isbn: "9780307454546",
-      description: "Mystery thriller about a missing heiress and a journalist.",
-      publisher: "Vintage Crime",
-      publishedYear: 2005,
-      authors: ["Stieg Larsson"],
-      categories: ["Mystery", "Thriller"],
+        "قصيدة طويلة تعد من أهم الأعمال الشعرية الحديثة، تتأمل الحياة والموت.",
+      publisher: "دار رياض الريس",
+      publishedYear: 1999,
+      authors: ["محمود درويش"],
+      categories: ["شعر", "فلسفة"],
       copies: 3,
     },
   ]
 
-  // Add Isaac Asimov to authors if not already there
-  if (!createdAuthors.some((a) => a.name === "Isaac Asimov")) {
-    const asimov = await prisma.author.upsert({
-      where: { name: "Isaac Asimov" },
-      update: {},
-      create: {
-        name: "Isaac Asimov",
-        biography: "American writer and professor of biochemistry",
-      },
-    })
-    createdAuthors.push(asimov)
-  }
-
-  if (!createdAuthors.some((a) => a.name === "Markus Zusak")) {
-    const zusak = await prisma.author.upsert({
-      where: { name: "Markus Zusak" },
-      update: {},
-      create: { name: "Markus Zusak", biography: "Australian writer" },
-    })
-    createdAuthors.push(zusak)
-  }
-
-  if (!createdAuthors.some((a) => a.name === "Yann Martel")) {
-    const martel = await prisma.author.upsert({
-      where: { name: "Yann Martel" },
-      update: {},
-      create: { name: "Yann Martel", biography: "Canadian author" },
-    })
-    createdAuthors.push(martel)
-  }
-
-  if (!createdAuthors.some((a) => a.name === "Herman Melville")) {
-    const melville = await prisma.author.upsert({
-      where: { name: "Herman Melville" },
-      update: {},
-      create: { name: "Herman Melville", biography: "American novelist" },
-    })
-    createdAuthors.push(melville)
-  }
-
-  if (!createdAuthors.some((a) => a.name === "Stieg Larsson")) {
-    const larsson = await prisma.author.upsert({
-      where: { name: "Stieg Larsson" },
-      update: {},
-      create: {
-        name: "Stieg Larsson",
-        biography: "Swedish writer and journalist",
-      },
-    })
-    createdAuthors.push(larsson)
-  }
-
-  // Create books with their relationships
+  // إنشاء الكتب مع العلاقات
   for (const bookData of booksData) {
-    // Find author IDs
     const authorIds = bookData.authors
       .map(
         (authorName) => createdAuthors.find((a) => a.name === authorName)?.id
       )
       .filter((id) => id !== undefined)
 
-    // Find category IDs
     const categoryIds = bookData.categories
       .map(
         (categoryName) =>
@@ -412,7 +395,6 @@ async function main() {
       )
       .filter((id) => id !== undefined)
 
-    // Create or update book
     const book = await prisma.book.upsert({
       where: { isbn: bookData.isbn },
       update: {
@@ -421,7 +403,7 @@ async function main() {
         publisher: bookData.publisher,
         publishedYear: bookData.publishedYear,
         authors: {
-          set: [], // Clear existing
+          set: [],
           connect: authorIds.map((id) => ({ id })),
         },
         categories: {
@@ -444,15 +426,12 @@ async function main() {
       },
     })
 
-    // Create book copies
-    // First, check existing copies
     const existingCopies = await prisma.bookCopy.findMany({
       where: { bookId: book.id },
     })
 
     const existingCopyNumbers = existingCopies.map((c) => c.copyNumber)
 
-    // Create missing copies
     for (let copyNum = 1; copyNum <= bookData.copies; copyNum++) {
       if (!existingCopyNumbers.includes(copyNum)) {
         await prisma.bookCopy.create({
@@ -460,22 +439,22 @@ async function main() {
             bookId: book.id,
             copyNumber: copyNum,
             status: "AVAILABLE",
-            location: `Main Library - Section ${String.fromCharCode(64 + Math.ceil(copyNum / 10))}`,
+            location: `المكتبة الرئيسية - القسم ${String.fromCharCode(64 + Math.ceil(copyNum / 10))}`,
           },
         })
-        console.log(`  📚 Created copy #${copyNum} for "${book.title}"`)
+        console.log(`  📚 تم إنشاء نسخة #${copyNum} لـ "${book.title}"`)
       } else {
-        console.log(`  📚 Copy #${copyNum} already exists for "${book.title}"`)
+        console.log(`  📚 النسخة #${copyNum} موجودة مسبقاً لـ "${book.title}"`)
       }
     }
 
     console.log(
-      `✅ Created/Ensured book: ${book.title} (${bookData.copies} copies)`
+      `✅ تم إنشاء الكتاب: ${book.title} (${bookData.copies} نسخ)`
     )
   }
 
   // ============================================
-  // 5. CREATE SOME SAMPLE RENTALS (Optional)
+  // 5. إنشاء استعارات تجريبية
   // ============================================
   const studentUser = createdUsers.find((u) => u.role === "STUDENT")
   const availableCopies = await prisma.bookCopy.findMany({
@@ -487,7 +466,7 @@ async function main() {
     const today = new Date()
     const copies = availableCopies
 
-    // 2 ACTIVE rentals (current)
+    // استعارتان نشطتان
     for (const copy of copies.slice(0, 2)) {
       const dueDate = new Date()
       dueDate.setDate(today.getDate() + 14)
@@ -511,11 +490,11 @@ async function main() {
             rentedAt: rentalDate,
             dueDate: dueDate,
             status: "ACTIVE",
-            notes: "Sample rental from seed",
+            notes: "استعارة تجريبية من البذر",
           },
         })
         console.log(
-          `📖 Created active rental for student: ${studentUser.name} - Copy ${copy.copyNumber}`
+          `📖 تم إنشاء استعارة نشطة للطالب: ${studentUser.name} - النسخة ${copy.copyNumber}`
         )
 
         await prisma.bookCopy.update({
@@ -525,7 +504,7 @@ async function main() {
       }
     }
 
-    // 1 RETURNED rental
+    // استعادة واحدة (معادة)
     const returnedCopy = copies[2]
     if (returnedCopy) {
       const existingReturned = await prisma.rental.findFirst({
@@ -552,14 +531,16 @@ async function main() {
             dueDate,
             returnedAt,
             status: "RETURNED",
-            notes: "Returned on time",
+            notes: "تمت الإعادة في الوقت المحدد",
           },
         })
-        console.log(`📖 Created returned rental for student: ${studentUser.name}`)
+        console.log(
+          `📖 تم إنشاء استعارة معادة للطالب: ${studentUser.name}`
+        )
       }
     }
 
-    // 1 OVERDUE rental
+    // استعارة متأخرة
     const overdueCopy = copies[3]
     if (overdueCopy) {
       const existingOverdue = await prisma.rental.findFirst({
@@ -583,10 +564,12 @@ async function main() {
             rentedAt,
             dueDate,
             status: "ACTIVE",
-            notes: "Overdue sample rental",
+            notes: "استعارة متأخرة تجريبية",
           },
         })
-        console.log(`📖 Created overdue rental for student: ${studentUser.name}`)
+        console.log(
+          `📖 تم إنشاء استعارة متأخرة للطالب: ${studentUser.name}`
+        )
 
         await prisma.bookCopy.update({
           where: { id: overdueCopy.id },
@@ -597,7 +580,7 @@ async function main() {
   }
 
   // ============================================
-  // SUMMARY
+  // الملخص
   // ============================================
   const finalUserCount = await prisma.user.count()
   const finalAuthorCount = await prisma.author.count()
@@ -606,21 +589,21 @@ async function main() {
   const finalCopyCount = await prisma.bookCopy.count()
   const finalRentalCount = await prisma.rental.count()
 
-  console.log("\n🎉 Seeding completed successfully!")
+  console.log("\n🎉 تم البذر بنجاح!")
   console.log("=".repeat(50))
-  console.log(`📊 Summary:`)
-  console.log(`  👥 Users: ${finalUserCount}`)
-  console.log(`  ✍️  Authors: ${finalAuthorCount}`)
-  console.log(`  📚 Categories: ${finalCategoryCount}`)
-  console.log(`  📖 Books: ${finalBookCount}`)
-  console.log(`  📕 Book Copies: ${finalCopyCount}`)
-  console.log(`  🔄 Rentals: ${finalRentalCount}`)
+  console.log(`📊 الملخص:`)
+  console.log(`  👥 المستخدمون: ${finalUserCount}`)
+  console.log(`  ✍️  المؤلفون: ${finalAuthorCount}`)
+  console.log(`  📚 التصنيفات: ${finalCategoryCount}`)
+  console.log(`  📖 الكتب: ${finalBookCount}`)
+  console.log(`  📕 نسخ الكتب: ${finalCopyCount}`)
+  console.log(`  🔄 الاستعارات: ${finalRentalCount}`)
   console.log("=".repeat(50))
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Error during seeding:", e)
+    console.error("❌ خطأ أثناء البذر:", e)
     process.exit(1)
   })
   .finally(async () => {
