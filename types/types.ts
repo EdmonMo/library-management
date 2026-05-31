@@ -315,3 +315,49 @@ export type AuthorListResponse = {
   page: number
   totalPages: number
 }
+
+export type RentalResponse = {
+  id: string
+  bookCopyId: string
+  studentId: string
+  rentedAt: Date
+  dueDate: Date
+  returnedAt: Date | null
+  status: "ACTIVE" | "RETURNED" | "OVERDUE" | "LOST"
+  notes: string | null
+  createdAt: Date
+  updatedAt: Date
+  bookCopy: {
+    id: string
+    copyNumber: number
+    status: string
+    book: {
+      id: string
+      title: string
+      isbn: string
+      publisher: string | null
+      coverImage: string | null
+    }
+  }
+  student: {
+    id: string
+    name: string
+    email: string
+    studentId: string | null
+    department: string | null
+  }
+}
+
+export type RentalListResponse = {
+  rentals: RentalResponse[]
+  total: number
+  page: number
+  totalPages: number
+}
+
+export type RentalStatsResponse = {
+  active: number
+  overdue: number
+  returned: number
+  total: number
+}

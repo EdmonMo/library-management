@@ -14,16 +14,21 @@ export const updateUserSchema = createUserSchema.partial().extend({
   isActive: z.boolean().optional(),
 })
 
-export const signupSchema = z.object({
-  name: z.string().min(1, "الاسم مطلوب"),
-  email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
-  password: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
-  confirmPassword: z
-    .string()
-    .min(8, "تأكيد كلمة السر يجب ان تكون على الاقل 8 احرف"),
-  department: z.string().optional(),
-  phone: z.string().optional(),
-})
+export const signupSchema = z
+  .object({
+    name: z.string().min(1, "الاسم مطلوب"),
+    email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
+    password: z.string().min(8, "كلمة السر يجب ان تكون على الاقل 8 احرف"),
+    confirmPassword: z
+      .string()
+      .min(8, "تأكيد كلمة السر يجب ان تكون على الاقل 8 احرف"),
+    department: z.string().optional(),
+    phone: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "كلمة السر وتأكيدها غير متطابقين",
+    path: ["confirmPassword"],
+  })
 
 export const loginSchema = z.object({
   email: z.string().email("البريد الالكتروني المدخل غير صحيح"),
@@ -57,11 +62,8 @@ export const addBookSchema = z.object({
   isbn: z.string().min(1, "رقم ISBN مطلوب"),
   description: z.string().optional(),
   publisher: z.string().optional(),
-  publishedYear: z.date().optional(),
-  coverImage: z.preprocess(
-    (v) => (v === "" ? undefined : v),
-    z.string().url().optional()
-  ),
+  publishedYear: z.coerce.number().int().optional(),
+  coverImage: z.string().optional(),
   categories: z.array(z.string()),
   authors: z.array(z.string()).optional(),
   numberOfCopies: z.number().min(1, "يجب ان يكون هناك نسخة واحدة على الاقل"),
@@ -75,4 +77,16 @@ export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>
 export type CreateCategoryFormData = z.infer<typeof createCategorySchema>
 export type CreateAuthorFormData = z.infer<typeof createAuthorSchema>
+export const createRentalSchema = z.object({
+  bookCopyId: z.string().min(1, "معرف نسخة الكتاب مطلوب"),
+  studentId: z.string().min(1, "معرف الطالب مطلوب"),
+})
+
+export const returnRentalSchema = z.object({
+  rentalId: z.string().min(1, "معرف الاستعارة مطلوب"),
+  notes: z.string().optional(),
+})
+
+export type CreateRentalFormData = z.infer<typeof createRentalSchema>
+export type ReturnRentalFormData = z.infer<typeof returnRentalSchema>
 export type AddBookFormData = z.infer<typeof addBookSchema>

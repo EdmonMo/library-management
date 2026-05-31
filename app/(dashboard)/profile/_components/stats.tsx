@@ -10,8 +10,10 @@ import { Book } from "lucide-react"
 
 export default function ProfileStats({
   user,
+  returnedCount = 0,
 }: {
   user: UserResponse & { _count: { rentals: number } }
+  returnedCount?: number
 }) {
   return (
     <Card>
@@ -34,7 +36,7 @@ export default function ProfileStats({
             <Book className="h-5 w-5 text-blue-600" />
             <span className="text-sm text-gray-600">الكتب المعادة</span>
           </div>
-          <span className="text-2xl font-bold text-blue-600">0</span>
+          <span className="text-2xl font-bold text-blue-600">{returnedCount}</span>
         </div>
       </CardContent>
     </Card>

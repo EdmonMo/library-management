@@ -50,7 +50,7 @@ export default async function RecommendedBooks() {
                 <Badge variant="outline" className="bg-blue-50 text-blue-700">
                   {book.categories[0].name}
                 </Badge>
-                <Link href={`/dashboard/books/${book.id}`}>
+                <Link href={`/books/${book.id}`}>
                   <Button
                     size="sm"
                     variant="outline"

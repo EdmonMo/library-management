@@ -480,15 +480,18 @@ async function main() {
   const studentUser = createdUsers.find((u) => u.role === "STUDENT")
   const availableCopies = await prisma.bookCopy.findMany({
     where: { status: "AVAILABLE" },
-    take: 3,
+    take: 4,
   })
 
   if (studentUser && availableCopies.length > 0) {
     const today = new Date()
-    const dueDate = new Date()
-    dueDate.setDate(today.getDate() + 14) // 14 days loan period
+    const copies = availableCopies
 
-    for (const copy of availableCopies.slice(0, 2)) {
+    // 2 ACTIVE rentals (current)
+    for (const copy of copies.slice(0, 2)) {
+      const dueDate = new Date()
+      dueDate.setDate(today.getDate() + 14)
+
       const existingRental = await prisma.rental.findFirst({
         where: {
           bookCopyId: copy.id,
@@ -498,22 +501,95 @@ async function main() {
       })
 
       if (!existingRental) {
+        const rentalDate = new Date()
+        rentalDate.setDate(today.getDate() - 5)
+
         await prisma.rental.create({
           data: {
             bookCopyId: copy.id,
             studentId: studentUser.id,
+            rentedAt: rentalDate,
             dueDate: dueDate,
             status: "ACTIVE",
             notes: "Sample rental from seed",
           },
         })
         console.log(
-          `📖 Created sample rental for student: ${studentUser.name} - Copy ${copy.copyNumber}`
+          `📖 Created active rental for student: ${studentUser.name} - Copy ${copy.copyNumber}`
         )
 
-        // Update copy status
         await prisma.bookCopy.update({
           where: { id: copy.id },
+          data: { status: "RENTED" },
+        })
+      }
+    }
+
+    // 1 RETURNED rental
+    const returnedCopy = copies[2]
+    if (returnedCopy) {
+      const existingReturned = await prisma.rental.findFirst({
+        where: {
+          bookCopyId: returnedCopy.id,
+          studentId: studentUser.id,
+          status: "RETURNED",
+        },
+      })
+
+      if (!existingReturned) {
+        const rentedAt = new Date()
+        rentedAt.setDate(today.getDate() - 20)
+        const dueDate = new Date()
+        dueDate.setDate(today.getDate() - 6)
+        const returnedAt = new Date()
+        returnedAt.setDate(today.getDate() - 7)
+
+        await prisma.rental.create({
+          data: {
+            bookCopyId: returnedCopy.id,
+            studentId: studentUser.id,
+            rentedAt,
+            dueDate,
+            returnedAt,
+            status: "RETURNED",
+            notes: "Returned on time",
+          },
+        })
+        console.log(`📖 Created returned rental for student: ${studentUser.name}`)
+      }
+    }
+
+    // 1 OVERDUE rental
+    const overdueCopy = copies[3]
+    if (overdueCopy) {
+      const existingOverdue = await prisma.rental.findFirst({
+        where: {
+          bookCopyId: overdueCopy.id,
+          studentId: studentUser.id,
+          status: "ACTIVE",
+        },
+      })
+
+      if (!existingOverdue) {
+        const rentedAt = new Date()
+        rentedAt.setDate(today.getDate() - 40)
+        const dueDate = new Date()
+        dueDate.setDate(today.getDate() - 10)
+
+        await prisma.rental.create({
+          data: {
+            bookCopyId: overdueCopy.id,
+            studentId: studentUser.id,
+            rentedAt,
+            dueDate,
+            status: "ACTIVE",
+            notes: "Overdue sample rental",
+          },
+        })
+        console.log(`📖 Created overdue rental for student: ${studentUser.name}`)
+
+        await prisma.bookCopy.update({
+          where: { id: overdueCopy.id },
           data: { status: "RENTED" },
         })
       }

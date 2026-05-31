@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
 import { UserResponse } from "@/types/types"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -10,10 +11,96 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { CircleMinus, Ellipsis, Eye } from "lucide-react"
-import Link from "next/link"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { CircleMinus, Ellipsis } from "lucide-react"
+import { useRouter } from "next/navigation"
 import UsersActiveStatusBadge from "@/components/users/users-active-status-badge"
 import { SortableHeader } from "@/components/data-table"
+import { deleteUserAction } from "@/actions/users"
+import { toast } from "sonner"
+
+function DisableStudentDialog({
+  student,
+  open,
+  onOpenChange,
+}: {
+  student: UserResponse
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const router = useRouter()
+
+  const handleDisable = async () => {
+    const result = await deleteUserAction(student.id)
+    if (result.success) {
+      toast.success("تم تعطيل حساب الطالب بنجاح")
+      router.refresh()
+    } else {
+      toast.error(result.message || "حدث خطأ")
+    }
+    onOpenChange(false)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>تأكيد التعطيل</DialogTitle>
+          <DialogDescription>
+            هل أنت متأكد من تعطيل حساب &laquo;{student.name}&raquo;؟
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            إلغاء
+          </Button>
+          <Button variant="destructive" onClick={handleDisable}>
+            تعطيل
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function StudentActionsCell({ student }: { student: UserResponse }) {
+  const [disableOpen, setDisableOpen] = useState(false)
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="outline">
+              <Ellipsis />
+            </Button>
+          }
+        />
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            className="cursor-pointer text-red-500 hover:text-red-600"
+            onClick={() => setTimeout(() => setDisableOpen(true), 0)}
+          >
+            <CircleMinus />
+            تعطيل
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DisableStudentDialog
+        student={student}
+        open={disableOpen}
+        onOpenChange={setDisableOpen}
+      />
+    </>
+  )
+}
 
 export const studentColumns: ColumnDef<UserResponse>[] = [
   {
@@ -68,31 +155,6 @@ export const studentColumns: ColumnDef<UserResponse>[] = [
     id: "actions",
     header: "الإجراءات",
     enableSorting: false,
-    cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button variant="outline">
-              <Ellipsis />
-            </Button>
-          }
-        />
-        <DropdownMenuContent>
-          <DropdownMenuItem>
-            <Link
-              href={`/users/${row.original.id}`}
-              className="flex items-center gap-2"
-            >
-              <Eye />
-              التفاصيل
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer text-red-500 hover:text-red-600">
-            <CircleMinus />
-            تعطيل
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({ row }) => <StudentActionsCell student={row.original} />,
   },
 ]

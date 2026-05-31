@@ -11,6 +11,7 @@ import {
   Tags,
   UserCircle,
   Users,
+  ArrowLeftRight,
 } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -52,6 +53,7 @@ export default function AppSidebar({ user }: { user: User }) {
       { icon: Tags, label: "التصنيفات", href: "/categories" },
       { icon: Users, label: "الموظفين", href: "/employees" },
       { icon: GraduationCap, label: "الطلاب", href: "/students" },
+      { icon: ArrowLeftRight, label: "إدارة الاستعارات", href: "/rentals" },
     ]
   } else {
     menuItems = [

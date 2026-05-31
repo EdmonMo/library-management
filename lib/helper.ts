@@ -1,20 +1,31 @@
 "use server"
 import { auth } from "./auth"
 
-/**
- * التحقق من صلاحيات المدير
- *
- * @description
- * دالة مساعدة للتحقق من أن المستخدم الحالي هو مدير ولديه صلاحية الوصول
- *
- * @returns {Promise<boolean>}
- *  - true إذا كان المستخدم مديراً
- *  - false ان لم يكن مديراً
- */
 export async function checkAdmin(): Promise<boolean> {
   const session = await auth()
   if (!session || session.user.role !== "ADMIN") {
     return false
   }
   return true
+}
+
+export async function checkEmployee(): Promise<boolean> {
+  const session = await auth()
+  if (
+    !session ||
+    (session.user.role !== "ADMIN" && session.user.role !== "EMPLOYEE")
+  ) {
+    return false
+  }
+  return true
+}
+
+export async function getSessionUserId(): Promise<string | null> {
+  const session = await auth()
+  return session?.user?.id ?? null
+}
+
+export async function getSessionUserRole(): Promise<string | null> {
+  const session = await auth()
+  return session?.user?.role ?? null
 }

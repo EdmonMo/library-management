@@ -245,8 +245,8 @@ export async function createBookAction(
           isbn,
           description: description ?? null,
           publisher: publisher ?? null,
-          publishedYear: publishedYear?.getFullYear() ?? null,
-          coverImage: coverImage ?? null,
+          publishedYear: publishedYear ?? null,
+          coverImage: coverImage || null,
           authors: {
             connect: authorIds.map((id) => ({ id })),
           },
@@ -351,7 +351,7 @@ export async function updateBookAction(
         isbn,
         description: description ?? null,
         publisher: publisher ?? null,
-        publishedYear: publishedYear?.getFullYear() ?? null,
+        publishedYear: publishedYear ?? null,
         coverImage: coverImage ?? null,
         authors: {
           set: [],

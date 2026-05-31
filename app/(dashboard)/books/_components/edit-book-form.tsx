@@ -32,7 +32,6 @@ import { useRouter } from "next/navigation"
 import { updateBookAction } from "@/actions/books"
 import { toast } from "sonner"
 import { BookDetailedResponse, CategoryResponse } from "@/types/types"
-import { DatePicker } from "@/components/ui/date-picker"
 
 export default function EditBookForm({
   book,
@@ -58,9 +57,7 @@ export default function EditBookForm({
       description: book.description,
       coverImage: book.coverImage,
       numberOfCopies: book._count.copies,
-      publishedYear: book.publishedYear
-        ? new Date(book.publishedYear.toString())
-        : undefined,
+      publishedYear: book.publishedYear ?? undefined,
       authors: book.authors.map((author) => author.name),
     },
   })
@@ -239,12 +236,20 @@ export default function EditBookForm({
             </div>
             {/* Published Year */}
             <div className="space-y-2">
-              <Label>تاريخ النشر</Label>
-              <DatePicker
-                name="publishedYear"
-                control={control}
-                placeholder="Pick a published date"
+              <Label htmlFor="publishedYear">سنة النشر</Label>
+              <Input
+                id="publishedYear"
+                type="number"
+                min={1000}
+                max={9999}
+                placeholder="مثال: 2024"
+                {...register("publishedYear", { valueAsNumber: true })}
               />
+              {errors.publishedYear && (
+                <p className="text-sm text-red-500">
+                  {errors.publishedYear.message}
+                </p>
+              )}
             </div>
 
             {/* Publisher */}

@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
 import { getUserByIdAction } from "@/actions/users"
 import InfoForm from "./_components/info-form"
 import ProfileStats from "./_components/stats"
@@ -7,7 +8,15 @@ import ChangePasswordForm from "./_components/change-password-form"
 
 export default async function StudentProfilePage() {
   const { user: currentUser } = await auth()
-  const { data: user } = await getUserByIdAction(currentUser?.id)
+  const [userResult, returnedCount] = await Promise.all([
+    getUserByIdAction(currentUser?.id),
+    currentUser?.id
+      ? prisma.rental.count({
+          where: { studentId: currentUser.id, status: "RETURNED" },
+        })
+      : 0,
+  ])
+  const user = userResult?.data
 
   if (!user) {
     return (
@@ -33,7 +42,7 @@ export default async function StudentProfilePage() {
         </div>
 
         <div className="space-y-6">
-          <ProfileStats user={user} />
+          <ProfileStats user={user} returnedCount={returnedCount} />
 
           <Card>
             <CardHeader>

@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import BookAvailablityBadge from "./book-availability-badge"
+import BorrowButton from "./borrow-button"
 import {
   ArrowRight,
   Book,
@@ -159,6 +160,9 @@ export default function ViewBook({ book }: { book: BookDetailedResponse }) {
                       >
                         {cfg.label}
                       </Badge>
+                      {copy.status === "AVAILABLE" && (
+                        <BorrowButton bookCopyId={copy.id} />
+                      )}
                     </div>
                   </div>
                 )

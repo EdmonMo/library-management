@@ -5,7 +5,6 @@
     "noUnusedLocals": false, // Don't warn about unused variables
     "noUnusedParameters": false, // Don't warn about unused parameters
     "target": "ES2017",
-    "ignoreDeprecations": "6.0",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -22,7 +21,6 @@
         "name": "next"
       }
     ],
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }

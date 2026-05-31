@@ -1,13 +1,20 @@
 import { Book } from "lucide-react"
 import { getUserByIdAction } from "@/actions/users"
+import { prisma } from "@/lib/prisma"
 import StatCard from "../stat-card"
 import RecommendedBooks from "./recommended-books"
 import MembershipStaus from "./membership-status"
 
 export default async function StudentDashboard({ userId }: { userId: string }) {
-  const { data: user, success } = await getUserByIdAction(userId)
+  const [userResult, activeRentals] = await Promise.all([
+    getUserByIdAction(userId),
+    prisma.rental.count({
+      where: { studentId: userId, status: "ACTIVE" },
+    }),
+  ])
 
-  if (!success) return <p>NOT FOUND</p>
+  if (!userResult.success) return <p>NOT FOUND</p>
+  const user = userResult.data
 
   if (!user) {
     return (
@@ -31,7 +38,12 @@ export default async function StudentDashboard({ userId }: { userId: string }) {
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard title="الكتب المستعارة" value={0} icon={Book} color="blue" />
+        <StatCard
+          title="الكتب المستعارة"
+          value={activeRentals}
+          icon={Book}
+          color="blue"
+        />
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
