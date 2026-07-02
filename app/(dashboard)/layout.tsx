@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import AppSidebar from "./_components/app-sidebar"
 import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
 export default async function Layout({
   children,
@@ -8,6 +9,7 @@ export default async function Layout({
   children: React.ReactNode
 }) {
   const { user } = await auth()
+  if (!user) redirect("/login")
   return (
     <SidebarProvider>
       <AppSidebar user={user} />
